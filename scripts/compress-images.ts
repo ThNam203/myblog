@@ -1,14 +1,21 @@
-import { readdir, stat, rename, unlink } from "node:fs/promises";
-import { join, extname, basename, dirname } from "node:path";
+import { access, mkdir, readdir, stat } from "node:fs/promises";
+import { join, extname, basename, dirname, relative } from "node:path";
 import sharp from "sharp";
 
-const TARGET_DIRS = [
-    "public/assets/images",
-    "public/assets/avatar",
-];
+const RAW_DIR = "public/raw_assets";
+const ASSETS_DIR = "public/assets";
+const IMAGE_EXTS = new Set([".webp", ".jpg", ".jpeg", ".png"]);
 const MAX_WIDTH = 1600;
 const QUALITY = 78;
-const MIN_BYTES_TO_RECOMPRESS = 250 * 1024;
+
+async function exists(path: string): Promise<boolean> {
+    try {
+        await access(path);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
 async function walk(dir: string): Promise<string[]> {
     const entries = await readdir(dir, { withFileTypes: true });
@@ -24,51 +31,46 @@ async function walk(dir: string): Promise<string[]> {
     return files;
 }
 
-async function processFile(file: string) {
-    const ext = extname(file).toLowerCase();
-    if (![".webp", ".jpg", ".jpeg", ".png"].includes(ext)) return;
+function outputPath(rawFile: string, rawRoot: string, assetsRoot: string): string {
+    const rel = relative(rawRoot, rawFile);
+    const base = basename(rel, extname(rel));
+    const dir = dirname(rel);
+    return join(assetsRoot, dir === "." ? "" : dir, `${base}.webp`);
+}
 
-    const before = (await stat(file)).size;
-    if (before < MIN_BYTES_TO_RECOMPRESS) {
-        console.log(`skip  ${file} (${(before / 1024).toFixed(0)}KB)`);
+async function processFile(rawFile: string, rawRoot: string, assetsRoot: string) {
+    const ext = extname(rawFile).toLowerCase();
+    if (!IMAGE_EXTS.has(ext)) return;
+
+    const outFile = outputPath(rawFile, rawRoot, assetsRoot);
+    if (await exists(outFile)) {
+        console.log(`skip  ${relative(process.cwd(), outFile)} (already exists)`);
         return;
     }
 
-    const tmp = join(dirname(file), `.tmp-${basename(file)}.webp`);
-    const pipeline = sharp(file)
+    await mkdir(dirname(outFile), { recursive: true });
+
+    const before = (await stat(rawFile)).size;
+    await sharp(rawFile)
         .rotate()
         .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-        .webp({ quality: QUALITY, effort: 6 });
+        .webp({ quality: QUALITY, effort: 6 })
+        .toFile(outFile);
 
-    await pipeline.toFile(tmp);
-    const after = (await stat(tmp)).size;
-
-    if (after >= before) {
-        await unlink(tmp);
-        console.log(`keep  ${file} (recompressed bigger)`);
-        return;
-    }
-
-    const finalPath = ext === ".webp" ? file : file.replace(ext, ".webp");
-    if (finalPath !== file) {
-        await unlink(file);
-    }
-    await rename(tmp, finalPath);
+    const after = (await stat(outFile)).size;
     console.log(
-        `done  ${file} ${(before / 1024).toFixed(0)}KB -> ${(after / 1024).toFixed(0)}KB`,
+        `done  ${relative(process.cwd(), rawFile)} -> ${relative(process.cwd(), outFile)} ${(before / 1024).toFixed(0)}KB -> ${(after / 1024).toFixed(0)}KB`,
     );
 }
 
 async function main() {
     const root = process.cwd();
-    for (const dir of TARGET_DIRS) {
-        const abs = join(root, dir);
-        try {
-            const files = await walk(abs);
-            for (const f of files) await processFile(f);
-        } catch (err) {
-            console.warn(`skip dir ${dir}:`, err);
-        }
+    const rawRoot = join(root, RAW_DIR);
+    const assetsRoot = join(root, ASSETS_DIR);
+
+    const files = await walk(rawRoot);
+    for (const f of files) {
+        await processFile(f, rawRoot, assetsRoot);
     }
 }
 
