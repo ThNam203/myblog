@@ -8,6 +8,8 @@ export type Dictionary = {
         title: string;
         description: string;
         siteName: string;
+        keywords: string[];
+        authorBio: string;
     };
     errors: {
         notAuthenticated: string;
@@ -194,9 +196,24 @@ export function getAuthModalLabels(d: Dictionary): AuthModalLabels {
 const dictionaries: Record<Locale, Dictionary> = {
     vi: {
         metadata: {
-            title: "Blog của Huỳnh Thành Nam",
-            description: "Đây là blog nơi mình chia sẻ suy nghĩ và trải nghiệm sống.",
+            title: "Blog của Huỳnh Thành Nam — Suy nghĩ, đời sống & hành trình IT",
+            description:
+                "Blog cá nhân của Huỳnh Thành Nam — chia sẻ suy nghĩ, trải nghiệm sống, hành trình làm việc trong ngành IT và những lát cắt nhỏ về cuộc sống ở Sài Gòn.",
             siteName: "Blog của Huỳnh Thành Nam",
+            keywords: [
+                "Huỳnh Thành Nam",
+                "blog cá nhân",
+                "blog tiếng Việt",
+                "nhật ký",
+                "suy nghĩ",
+                "trải nghiệm sống",
+                "Sài Gòn",
+                "lập trình viên",
+                "IT",
+                "Let's Live",
+            ],
+            authorBio:
+                "Mình là Huỳnh Thành Nam — một lập trình viên ở Sài Gòn. Mình viết về những gì mình đọc, học, làm, và những cảm xúc nhỏ giữa đời thường.",
         },
         errors: {
             notAuthenticated: "Bạn chưa đăng nhập.",
@@ -315,9 +332,24 @@ const dictionaries: Record<Locale, Dictionary> = {
     },
     en: {
         metadata: {
-            title: "Blog of Huỳnh Thành Nam",
-            description: "This is my blog where I share my thoughts and life experiences.",
+            title: "Blog of Huỳnh Thành Nam — Thoughts, life & a developer’s journey",
+            description:
+                "Personal blog by Huỳnh Thành Nam — thoughts, life experiences, notes from working in IT, and small slices of everyday life in Saigon, Vietnam.",
             siteName: "Blog of Huỳnh Thành Nam",
+            keywords: [
+                "Huỳnh Thành Nam",
+                "personal blog",
+                "developer blog",
+                "life in Saigon",
+                "Vietnam",
+                "thoughts",
+                "journal",
+                "software engineer",
+                "IT",
+                "Let's Live",
+            ],
+            authorBio:
+                "I'm Huỳnh Thành Nam, a software developer based in Saigon. I write about what I read, learn, build, and feel along the way.",
         },
         errors: {
             notAuthenticated: "You are not signed in.",

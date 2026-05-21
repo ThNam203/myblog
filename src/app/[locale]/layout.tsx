@@ -4,12 +4,19 @@ import Alert from "@/app/_components/alert";
 import Footer from "@/app/_components/footer";
 import { SiteMusicPlayer } from "@/app/_components/site-music-player";
 import { HeaderSiteMenu } from "@/app/_components/header-site-menu";
-import { LETSLIVE_URL, WEB_DEFAULT_INSTAGRAM_URL } from "@/lib/constants";
+import {
+    LETSLIVE_URL,
+    WEB_DEFAULT_AUTHOR,
+    WEB_DEFAULT_INSTAGRAM_URL,
+    WEB_DEFAULT_URL,
+} from "@/lib/constants";
 import { getAuthModalLabels, getDictionary, getSearchDialogLabels } from "@/i18n/dictionaries";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { createClient } from "@/lib/supabase/server";
 import { MUSIC_TRACKS } from "@/lib/music-tracks";
 import { Intro } from "../_components/intro";
+
+const DEFAULT_OG_IMAGE = "/assets/images/05052026_raining.webp";
 
 type Props = {
     children: React.ReactNode;
@@ -25,14 +32,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const dictionary = getDictionary(locale);
+    const { title, description, siteName, keywords } = dictionary.metadata;
+    const ogLocale = locale === "vi" ? "vi_VN" : "en_US";
+    const alternateOgLocale = locale === "vi" ? "en_US" : "vi_VN";
 
     return {
-        title: dictionary.metadata.title,
-        description: dictionary.metadata.description,
+        metadataBase: new URL(WEB_DEFAULT_URL),
+        title: {
+            default: title,
+            template: `%s — ${siteName}`,
+        },
+        description,
+        keywords,
+        applicationName: siteName,
+        authors: [{ name: WEB_DEFAULT_AUTHOR }],
+        creator: WEB_DEFAULT_AUTHOR,
+        publisher: WEB_DEFAULT_AUTHOR,
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
         openGraph: {
-            title: dictionary.metadata.title,
-            description: dictionary.metadata.description,
-            images: [],
+            type: "website",
+            siteName,
+            locale: ogLocale,
+            alternateLocale: [alternateOgLocale],
+            title,
+            description,
+            url: `/${locale}`,
+            images: [
+                {
+                    url: DEFAULT_OG_IMAGE,
+                    width: 1600,
+                    height: 900,
+                    alt: siteName,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: [DEFAULT_OG_IMAGE],
         },
     };
 }
