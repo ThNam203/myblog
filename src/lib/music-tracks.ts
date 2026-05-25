@@ -45,4 +45,9 @@ export const MUSIC_TRACKS: MusicTrack[] = [
         title: "Yêu em thì gật đầu",
         artist: "Lê Bảo Hân Cover",
     },
+    {
+        src: "/music/giua_dai_lo_dong_tay.mp3",
+        title: "Giữa đại lộ đông tây",
+        artist: "Uyên Linh",
+    },
 ];
