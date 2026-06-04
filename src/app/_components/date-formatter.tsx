@@ -1,3 +1,5 @@
+"use client";
+
 import { parseISO, format } from "date-fns";
 import { vi as viLocale, enUS } from "date-fns/locale";
 import { type Locale } from "@/i18n/config";
@@ -12,7 +14,9 @@ const DateFormatter = ({ dateString, locale = "vi" }: Props) => {
     const dateLocale = locale === "vi" ? viLocale : enUS;
 
     return (
-        <time dateTime={dateString}>{format(date, "LLLL d, yyyy HH:mm", { locale: dateLocale })}</time>
+        <time dateTime={dateString} suppressHydrationWarning>
+            {format(date, "LLLL d, yyyy HH:mm", { locale: dateLocale })}
+        </time>
     );
 };
 
