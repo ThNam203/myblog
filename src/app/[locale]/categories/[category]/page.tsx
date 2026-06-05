@@ -5,14 +5,7 @@ import Container from "@/app/_components/container";
 import { MoreStories } from "@/app/_components/more-stories";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isValidLocale, locales } from "@/i18n/config";
-
-function slugifyCategory(category: string): string {
-    return category.toLowerCase().replace(/\s+/g, "-");
-}
-
-function deslugifyCategory(slug: string): string {
-    return slug.replace(/-/g, " ");
-}
+import { deslugifyCategory, slugifyCategory } from "@/lib/category";
 
 type Props = {
     params: Promise<{ locale: string; category: string }>;

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllCategories, getAllPosts } from "@/lib/api";
 import { locales } from "@/i18n/config";
+import { slugifyCategory } from "@/lib/category";
 import { WEB_DEFAULT_URL } from "@/lib/constants";
 
 const SITE_URL = WEB_DEFAULT_URL.replace(/\/$/, "");
@@ -32,9 +33,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
             });
         }
 
+        const seenCategorySlugs = new Set<string>();
         for (const category of getAllCategories(locale)) {
+            const slug = slugifyCategory(category);
+            if (seenCategorySlugs.has(slug)) continue;
+            seenCategorySlugs.add(slug);
             entries.push({
-                url: `${SITE_URL}/${locale}/categories/${encodeURIComponent(category)}`,
+                url: `${SITE_URL}/${locale}/categories/${slug}`,
                 lastModified: now,
                 changeFrequency: "weekly",
                 priority: 0.5,
