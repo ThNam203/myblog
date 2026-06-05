@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useOptimistic, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Comment } from "@/lib/supabase/types";
 import { addComment, deleteComment } from "@/lib/actions/comments";
@@ -33,6 +32,7 @@ type Props = {
     commentsDelete: string;
     commentsDeleteCommentAria: string;
     commentsDeleteReplyAria: string;
+    onMutated?: () => void | Promise<void>;
 };
 
 type OptimisticAction = { type: "add"; comment: Comment } | { type: "delete"; id: string };
@@ -72,9 +72,9 @@ export function CommentList(props: Props) {
         commentsDelete,
         commentsDeleteCommentAria,
         commentsDeleteReplyAria,
+        onMutated,
     } = props;
 
-    const router = useRouter();
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [optimisticComments, applyOptimistic] = useOptimistic(comments, reducer);
     const [, startTransition] = useTransition();
@@ -108,7 +108,7 @@ export function CommentList(props: Props) {
                     toast.error(result.error);
                 } else {
                     toast.success(commentsPostedSuccess);
-                    router.refresh();
+                    await onMutated?.();
                 }
             });
         },
@@ -118,8 +118,8 @@ export function CommentList(props: Props) {
             currentUserDisplayName,
             currentUserId,
             locale,
+            onMutated,
             postSlug,
-            router,
         ],
     );
 
@@ -131,11 +131,11 @@ export function CommentList(props: Props) {
                 if (result.error) {
                     toast.error(result.error);
                 } else {
-                    router.refresh();
+                    await onMutated?.();
                 }
             });
         },
-        [applyOptimistic, locale, postSlug, router],
+        [applyOptimistic, locale, onMutated, postSlug],
     );
 
     return (
