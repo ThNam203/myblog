@@ -60,6 +60,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         alternates: {
             canonical: homePath,
             languages,
+            types: {
+                "application/rss+xml": `/${locale}/rss.xml`,
+            },
         },
     };
 }

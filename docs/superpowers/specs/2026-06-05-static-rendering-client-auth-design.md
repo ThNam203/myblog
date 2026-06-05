@@ -78,3 +78,25 @@ browser-side concern. No security regression.
 - `npx tsc --noEmit` clean.
 - Manual: signed-in header still resolves; `/en` and `/vi` RSS links present in head;
   protected `/profile` still gated.
+
+## Addendum (2026-06-05): superseded `<html lang>` approach + proxy rename
+
+The `HtmlLangSync` client-correction tradeoff in sections 1–2 was superseded. To
+render the correct `<html lang>` per locale **at SSR** (not just after hydration),
+the document shell moved instead of being defaulted:
+
+- `app/[locale]/layout.tsx` now renders `<html lang={locale}>`, `<head>` (favicons,
+  fonts, no-FOUC script) and `<body>`. `lang` is the real route locale, statically
+  prerendered per locale (`/en` → `lang="en"`, `/vi` → `lang="vi"`).
+- `app/layout.tsx` is reduced to a pass-through (`return children`). Valid because
+  every UI page routes through `[locale]`; the only non-locale routes are the
+  redirect-only catch-all and route handlers (robots, sitemap, auth callback),
+  none of which need a document shell.
+- `HtmlLangSync` deleted — no longer needed.
+- Home `generateMetadata` sets its own `alternates`, which shallow-replaces the
+  layout's `alternates.types`; the RSS `types` entry was duplicated into the home
+  page's `alternates` so the feed link survives on `/[locale]`.
+
+Also: `src/middleware.ts` → `src/proxy.ts` and `export ... middleware()` →
+`proxy()` per the Next 16 file-convention rename (clears the build deprecation
+warning; `config.matcher` and behavior unchanged).

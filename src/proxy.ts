@@ -17,7 +17,7 @@ function needsAuthRefresh(pathname: string): boolean {
     return AUTH_REFRESH_PREFIXES.some((p) => rest === p || rest.startsWith(p + "/"));
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     if (
