@@ -94,9 +94,18 @@ export type StoryGroup = {
     createdAt: string;     // ISO; expiry + ordering anchor (rings sorted desc)
     activeForMs?: number;  // optional override of the default active window
 };
-
-export const DEFAULT_ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000; // 24h
 ```
+
+> Implementation note (from planning): the pure logic + runtime constants
+> (`DEFAULT_ACTIVE_WINDOW_MS`, `DEFAULT_IMAGE_DURATION_MS`) live in
+> `src/lib/stories/` (not under `[locale]/`), matching the repo's `src/lib/`
+> convention and keeping test files in a bracket-free path. The pure files
+> import cross-module **types** via `@/` (`import type` is erased by esbuild, so
+> the `jiti` test runtime needs no alias config) and define their constants
+> locally; tests import the pure modules via relative paths.
+
+`DEFAULT_ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000` is defined in
+`src/lib/stories/story-sections.ts`.
 
 A ring is **active** when `now - Date.parse(createdAt) < (activeForMs ??
 DEFAULT_ACTIVE_WINDOW_MS)`, else **expired**. Computed client-side (see §2a).
