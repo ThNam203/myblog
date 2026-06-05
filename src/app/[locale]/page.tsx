@@ -36,6 +36,10 @@ function postImageUrl(post: PostImageSource): string | undefined {
     return undefined;
 }
 
+export function generateStaticParams() {
+    return locales.map((locale) => ({ locale }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     if (!isValidLocale(locale)) {

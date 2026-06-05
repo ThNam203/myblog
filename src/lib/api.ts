@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { Post, type PostAddress } from "@/interfaces/post";
 import { defaultLocale, isValidLocale, type Locale } from "@/i18n/config";
 import { validateFrontMatter } from "@/lib/post-schema";
@@ -63,7 +64,7 @@ export function getPostSlugs(locale: string = defaultLocale) {
     return fs.readdirSync(targetDirectory).filter((fileName) => fileName.endsWith(".md"));
 }
 
-export function getPostBySlug(slug: string, locale: string = defaultLocale) {
+export const getPostBySlug = cache((slug: string, locale: string = defaultLocale) => {
     if (!isValidLocale(locale)) {
         return null;
     }
@@ -92,16 +93,16 @@ export function getPostBySlug(slug: string, locale: string = defaultLocale) {
 
     if (post.draft && HIDE_DRAFTS) return null;
     return post;
-}
+});
 
-export function getAllPosts(locale: string = defaultLocale): Post[] {
+export const getAllPosts = cache((locale: string = defaultLocale): Post[] => {
     const slugs = getPostSlugs(locale);
     const posts = slugs
         .map((slug) => getPostBySlug(slug, locale))
         .filter((post): post is Post => post !== null)
         .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
     return posts;
-}
+});
 
 export function getAllCategories(locale: string = defaultLocale): string[] {
     const posts = getAllPosts(locale);

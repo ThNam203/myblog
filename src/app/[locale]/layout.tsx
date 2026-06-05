@@ -12,7 +12,7 @@ import {
 } from "@/lib/constants";
 import { getAuthModalLabels, getDictionary, getSearchDialogLabels } from "@/i18n/dictionaries";
 import { isValidLocale, type Locale } from "@/i18n/config";
-import { createClient } from "@/lib/supabase/server";
+import { HtmlLangSync } from "@/app/_components/html-lang-sync";
 import { MUSIC_TRACKS } from "@/lib/music-tracks";
 import { Intro } from "../_components/intro";
 
@@ -59,6 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 "max-video-preview": -1,
             },
         },
+        alternates: {
+            types: {
+                "application/rss+xml": `/${locale}/rss.xml`,
+            },
+        },
         openGraph: {
             type: "website",
             siteName,
@@ -92,19 +97,10 @@ export default async function LocaleLayout({ children, params }: Props) {
     }
 
     const dictionary = getDictionary(locale as Locale);
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    const meta = user?.user_metadata as { avatar_url?: string; picture?: string } | undefined;
-    const avatarUrl =
-        (typeof meta?.avatar_url === "string" && meta.avatar_url) ||
-        (typeof meta?.picture === "string" && meta.picture) ||
-        null;
 
     return (
         <>
+            <HtmlLangSync locale={locale as Locale} />
             <Alert
                 textPrefix={dictionary.ui.alertTextPrefix}
                 linkLabel={dictionary.ui.alertLinkLabel}
@@ -122,8 +118,6 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <div className="relative flex items-center gap-2">
                     <HeaderSiteMenu
                         locale={locale}
-                        isAuthenticated={!!user}
-                        avatarUrl={avatarUrl}
                         vietnameseLabel={dictionary.ui.languageOptionVietnamese}
                         englishLabel={dictionary.ui.languageOptionEnglish}
                         languageSectionLabel={dictionary.ui.languageLabel}

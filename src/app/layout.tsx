@@ -2,8 +2,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter } from "next/font/google";
 import cn from "classnames";
-import { cookies } from "next/headers";
-import { defaultLocale, isValidLocale } from "@/i18n/config";
+import { defaultLocale } from "@/i18n/config";
 
 import "./globals.css";
 import { SiteToastContainer } from "@/app/_components/site-toast-container";
@@ -47,12 +46,8 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const cookieStore = await cookies();
-    const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
-    const locale = cookieLocale && isValidLocale(cookieLocale) ? cookieLocale : defaultLocale;
-
     return (
-        <html lang={locale} suppressHydrationWarning>
+        <html lang={defaultLocale} suppressHydrationWarning>
             <head>
                 <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
                 <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
@@ -63,7 +58,6 @@ export default async function RootLayout({
                 <meta name="msapplication-TileColor" content="#000000" />
                 <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
                 <meta name="theme-color" content="#000" />
-                <link rel="alternate" type="application/rss+xml" href={`/${locale}/rss.xml`} />
                 <script dangerouslySetInnerHTML={{ __html: noFoucScript }} />
             </head>
             <body className={cn(inter.className, "dark:bg-slate-900 dark:text-slate-400")}>

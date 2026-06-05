@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthModal, type AuthModalTab } from "@/app/_components/comments/auth-modal";
 import { SiteSearchDialog, SearchGlyph } from "@/app/_components/site-search-dialog";
-import { signOut } from "@/lib/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 import type { AuthModalLabels, SearchDialogLabels } from "@/i18n/dictionaries";
 import { defaultLocale, type Locale } from "@/i18n/config";
 import { swapLocaleInPathname } from "@/i18n/swap-locale-path";
@@ -55,8 +55,6 @@ type ThemeLabelMap = Record<ColorSchemePreference, string>;
 
 type Props = {
     locale: Locale;
-    isAuthenticated: boolean;
-    avatarUrl: string | null;
     vietnameseLabel: string;
     englishLabel: string;
     languageSectionLabel: string;
@@ -75,8 +73,6 @@ type Props = {
 
 export function HeaderSiteMenu({
     locale,
-    isAuthenticated,
-    avatarUrl,
     vietnameseLabel,
     englishLabel,
     languageSectionLabel,
@@ -90,8 +86,44 @@ export function HeaderSiteMenu({
     const [menuOpen, setMenuOpen] = useState(false);
     const [authSession, setAuthSession] = useState<{ tab: AuthModalTab; id: number } | null>(null);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [auth, setAuth] = useState<{ isAuthenticated: boolean; avatarUrl: string | null }>({
+        isAuthenticated: false,
+        avatarUrl: null,
+    });
     const rootRef = useRef<HTMLDivElement>(null);
+    const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
     const { mode, setMode, isMounted } = useColorSchemePreference();
+
+    useEffect(() => {
+        const supabase = createClient();
+        supabaseRef.current = supabase;
+        let active = true;
+
+        const deriveAvatar = (
+            metadata: { avatar_url?: string; picture?: string } | undefined,
+        ): string | null =>
+            (typeof metadata?.avatar_url === "string" && metadata.avatar_url) ||
+            (typeof metadata?.picture === "string" && metadata.picture) ||
+            null;
+
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (!active) return;
+            setAuth({ isAuthenticated: !!user, avatarUrl: deriveAvatar(user?.user_metadata) });
+        });
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            const user = session?.user ?? null;
+            setAuth({ isAuthenticated: !!user, avatarUrl: deriveAvatar(user?.user_metadata) });
+        });
+
+        return () => {
+            active = false;
+            subscription.unsubscribe();
+            supabaseRef.current = null;
+        };
+    }, []);
 
     useEffect(() => {
         const handlePointerDown = (event: MouseEvent): void => {
@@ -143,7 +175,7 @@ export function HeaderSiteMenu({
 
     async function handleSignOut() {
         setMenuOpen(false);
-        await signOut();
+        await supabaseRef.current?.auth.signOut();
         router.refresh();
     }
 
@@ -191,9 +223,9 @@ export function HeaderSiteMenu({
                 aria-label={labels.menuOpenAria}
                 onClick={() => setMenuOpen((o) => !o)}
             >
-                {avatarUrl ? (
+                {auth.avatarUrl ? (
                     <img
-                        src={avatarUrl}
+                        src={auth.avatarUrl}
                         alt=""
                         width={32}
                         height={32}
@@ -256,7 +288,7 @@ export function HeaderSiteMenu({
 
                     <div className="my-2 border-t border-neutral-200 dark:border-slate-700" />
 
-                    {isAuthenticated ? (
+                    {auth.isAuthenticated ? (
                         <>
                             <Link
                                 href={`/${locale}/profile`}
