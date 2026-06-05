@@ -20,19 +20,21 @@ build-time constant; all interaction is client-side after hydration.
 
 | Question | Decision |
 |----------|----------|
-| Lifecycle | **Permanent archive** — stories live forever like posts. No 24h expiry, no server "seen" state. (Closer to IG *Highlights*.) |
+| Lifecycle | **Nothing is deleted.** Rings split into **Active** and **Expired** sections by age. Expiry is **group-level, age-based**: a ring expires `activeWindowMs` after its `createdAt` (default 24h; optional per-group override). Expired rings stay fully viewable in the Archive section. No server "seen" state. |
+| Classification timing | **Client-side at runtime** (`Date.now()`), not build time — so a ring moves Active→Expired on its own without a redeploy, while the home page stays statically rendered. |
 | Media per item | **Mixed** — each item is an image OR a video. |
 | Grouping | **Rings/groups like IG** — top row of circles; each ring contains an ordered sequence of items. |
-| Entry point | **Top of home page** only — a row of circles above `HeroPost`. (No separate `/stories` route for now.) |
+| Entry point | **Top of home page.** Active rings as a circles row above `HeroPost`; an **Expired/Archive** section below it on the same page. (No separate `/stories` route for now.) |
 | Player fidelity | **Full IG-fidelity** — segmented progress bars, auto-advance, tap-zones, hold-to-pause, cross-ring nav, keyboard + Esc. |
 | Data source | **Typed object array** (`src/data/stories.ts`), NOT markdown. Author edits this file. |
 | Dependencies | **No new runtime dependency.** No story player library. |
 
 ### Out of scope (YAGNI)
 
-Comments/reactions on stories, ephemeral expiry, a dedicated `/stories` route,
-server-side view counts, deep-link/share URLs, story-creation UI. All are easy
-follow-ups; none are built now.
+Comments/reactions on stories, **true deletion** of expired stories (they move to
+Archive, never disappear), a dedicated `/stories` route, server-side view counts,
+deep-link/share URLs, story-creation UI. All are easy follow-ups; none are built
+now.
 
 ## Architecture
 
@@ -43,12 +45,14 @@ public/assets/stories/<group>/ (video + image files dropped in directly)
 src/interfaces/story.ts        (shared types)
 
 src/app/[locale]/_components/stories/
-  story-bar.tsx        client — row of circles, opens viewer
-  story-viewer.tsx     client — fullscreen overlay player (portal)
-  story-progress.tsx   presentational — segmented progress bars
-  story-player.ts      PURE reducer + types (no React, no DOM) — unit-tested
-  use-story-player.ts  React hook — wraps reducer, owns timers + video events
-  story-player.test.ts node:test unit tests for the reducer
+  story-bar.tsx          client — Active circles row + Expired archive section, opens viewer
+  story-viewer.tsx       client — fullscreen overlay player (portal)
+  story-progress.tsx     presentational — segmented progress bars
+  story-player.ts        PURE reducer + types (no React, no DOM) — unit-tested
+  use-story-player.ts    React hook — wraps reducer, owns timers + video events
+  story-sections.ts      PURE splitStorySections(groups, now, defaultWindow) — unit-tested
+  use-story-sections.ts  React hook — client-side now/mounted, returns {active,expired}
+  story-player.test.ts   node:test unit tests for reducer + splitStorySections
 
 src/app/[locale]/page.tsx      (+) render <StoryBar stories={stories} locale={locale} />
 src/i18n/dictionaries.ts       (+) story UI labels (aria, close, prev/next)
@@ -87,9 +91,15 @@ export type StoryGroup = {
     title: Localized;      // ring label under the circle
     cover: string;         // circle thumbnail image
     items: StoryItem[];    // ordered; played front-to-back
-    createdAt: string;     // ISO; rings sorted desc (newest first)
+    createdAt: string;     // ISO; expiry + ordering anchor (rings sorted desc)
+    activeForMs?: number;  // optional override of the default active window
 };
+
+export const DEFAULT_ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000; // 24h
 ```
+
+A ring is **active** when `now - Date.parse(createdAt) < (activeForMs ??
+DEFAULT_ACTIVE_WINDOW_MS)`, else **expired**. Computed client-side (see §2a).
 
 `src/data/stories.ts` exports `export const stories: StoryGroup[] = [ ... ]`,
 sorted (or sorted at read time) newest-first. This is the only file the owner
@@ -97,6 +107,37 @@ edits to add content. Validation note: a small `assertStoriesValid(stories)`
 guard (unique ids, non-empty items, known media type) runs in dev/build to catch
 authoring typos early — pure function, also unit-tested. No Zod needed (data is
 typed at the source, unlike markdown frontmatter).
+
+### 1a. Active/expired classification — `story-sections.ts` + `use-story-sections.ts`
+
+Pure function (framework-free, unit-tested):
+
+```ts
+export function splitStorySections(
+    groups: StoryGroup[],
+    now: number,
+    defaultWindowMs = DEFAULT_ACTIVE_WINDOW_MS,
+): { active: StoryGroup[]; expired: StoryGroup[] };
+// each list sorted by createdAt desc (newest first)
+// boundary: elapsed >= window => expired (strict: exactly-at-window is expired)
+```
+
+Because the home page is **statically rendered**, `now` cannot be baked at build
+time (the page would freeze the Active/Expired split until the next deploy). So
+the split is computed **on the client** via `use-story-sections.ts`:
+
+- `mounted` starts `false`; a `useEffect` flips it `true` and reads `Date.now()`.
+- **Before mount** (SSR output + first client render): render a deterministic
+  baseline — all rings in the Active row, sorted by `createdAt` desc, no Expired
+  heading. This keeps server and first-client HTML identical (no hydration
+  mismatch); the container carries `suppressHydrationWarning` as a belt-and-braces
+  (same approach as the repo's `DateFormatter`, commit 35a0be3).
+- **After mount:** recompute with real `now`, render Active circles + Expired
+  archive section. The one-frame reconciliation is acceptable and invisible in
+  practice.
+
+This keeps the static-rendering guarantee intact while letting rings expire on
+their own clock without a redeploy.
 
 ### 2. Pure player core — `story-player.ts`
 
@@ -156,10 +197,19 @@ deliberately excludes:
 
 ### 4. UI components
 
-- **`story-bar.tsx`** (client): horizontal scroll row of circular `cover`
-  thumbnails with `title` beneath. Receives `stories` + `locale` as props. Click
-  on ring *i* → `OPEN { groupIndex: i }`. Optional greyed "seen" styling read from
-  `localStorage` (client-only, keeps page static; purely cosmetic).
+- **`story-bar.tsx`** (client): receives `stories` + `locale` as props, calls
+  `use-story-sections` to get `{ active, expired }`.
+  - **Active**: horizontal scroll row of circular `cover` thumbnails with `title`
+    beneath (the classic IG row).
+  - **Expired/Archive**: a labelled section below (heading from the dictionary,
+    e.g. "Archive"). Rendered only when `expired.length > 0`; styled distinctly
+    (e.g. muted/desaturated circles) so it reads as past.
+  - Clicking a ring opens the viewer **scoped to its own section**: the viewer
+    receives that section's `StoryGroup[]` plus the clicked index, so auto-advance
+    walks the active set or the archive set, then closes at the section's end (it
+    does not bleed across the Active/Expired boundary).
+  - Optional greyed "seen" styling read from `localStorage` (client-only, keeps
+    page static; purely cosmetic).
 - **`story-viewer.tsx`** (client): full-screen overlay rendered via
   `createPortal` to `document.body`. Layout: progress bars (top), close button,
   media stage (image `<img>` or `<video>`), caption overlay (bottom), invisible
@@ -221,6 +271,9 @@ untested) and "no new dependency without asking", the plan is:
     group → CLOSE; PREV clamp at very start; PREV across boundary → prev group's
     last item; TICK reaching 1 advances; PAUSE/RESUME; progress reset on item
     change.
+  - `splitStorySections` — ring inside window → active; past window → expired;
+    exactly-at-window → expired (strict boundary); per-group `activeForMs`
+    override; each list sorted newest-first; empty input → empty lists.
   - `assertStoriesValid` — duplicate ids, empty items, unknown media type.
 - **Manual / visual verification** (no DOM test runner without a new dep): the
   viewer overlay, tap-zones, video autoplay, and reduced-motion behavior are
