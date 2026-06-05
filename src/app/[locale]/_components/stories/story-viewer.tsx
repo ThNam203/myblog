@@ -7,6 +7,8 @@ import type { StoryGroup } from "@/interfaces/story";
 import { StoryProgress } from "./story-progress";
 import type { useStoryPlayer } from "./use-story-player";
 
+const HOLD_MS = 250; // press longer than this is a hold (pause), not a tap (navigate)
+
 type Player = ReturnType<typeof useStoryPlayer>;
 
 type Props = {
@@ -20,6 +22,33 @@ export function StoryViewer({ locale, labels, player }: Props) {
     const { state, currentGroup, currentItem, close, next, prev, pause, resume, setProgress } =
         player;
     const videoRef = useRef<HTMLVideoElement>(null);
+    // Distinguish a tap (navigate) from a hold (pause only). A hold past
+    // HOLD_MS sets holdRef so the trailing click is suppressed; keyboard
+    // activation has no pointerdown, so holdRef stays false and navigates.
+    const holdRef = useRef(false);
+    const holdTimerRef = useRef<number | null>(null);
+
+    const onZonePointerDown = () => {
+        holdRef.current = false;
+        holdTimerRef.current = window.setTimeout(() => {
+            holdRef.current = true;
+        }, HOLD_MS);
+        pause();
+    };
+    const onZonePointerEnd = () => {
+        if (holdTimerRef.current !== null) {
+            window.clearTimeout(holdTimerRef.current);
+            holdTimerRef.current = null;
+        }
+        resume();
+    };
+    const onZoneClick = (navigate: () => void) => () => {
+        if (holdRef.current) {
+            holdRef.current = false;
+            return;
+        }
+        navigate();
+    };
 
     // Keyboard: Esc closes, arrows navigate, Space pauses/resumes.
     useEffect(() => {
@@ -126,17 +155,19 @@ export function StoryViewer({ locale, labels, player }: Props) {
                 {/* Tap zones: left = prev, right = next. Hold to pause. */}
                 <button
                     type="button"
-                    onClick={prev}
-                    onPointerDown={pause}
-                    onPointerUp={resume}
+                    onClick={onZoneClick(prev)}
+                    onPointerDown={onZonePointerDown}
+                    onPointerUp={onZonePointerEnd}
+                    onPointerLeave={onZonePointerEnd}
                     aria-label={labels.prevAria}
                     className="absolute inset-y-0 left-0 z-0 w-1/3 cursor-default"
                 />
                 <button
                     type="button"
-                    onClick={next}
-                    onPointerDown={pause}
-                    onPointerUp={resume}
+                    onClick={onZoneClick(next)}
+                    onPointerDown={onZonePointerDown}
+                    onPointerUp={onZonePointerEnd}
+                    onPointerLeave={onZonePointerEnd}
                     aria-label={labels.nextAria}
                     className="absolute inset-y-0 right-0 z-0 w-1/3 cursor-default"
                 />
