@@ -5,6 +5,7 @@
         "lint": "eslint .",
         "build": "next build",
         "start": "next start",
+        "test": "node --import jiti/register --test \"src/lib/stories/*.test.ts\"",
         "new-post": "jiti scripts/new-post.ts",
         "compress-images": "jiti scripts/compress-images.ts"
     },
