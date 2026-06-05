@@ -123,7 +123,19 @@ export type Dictionary = {
         newsletterErrorGeneric: string;
         newsletterErrorInvalidEmail: string;
     };
+    story: {
+        regionLabel: string;
+        archiveHeading: string;
+        openAria: string;
+        closeAria: string;
+        prevAria: string;
+        nextAria: string;
+        pauseAria: string;
+        playAria: string;
+    };
 };
+
+export type StoryLabels = Dictionary["story"];
 
 export type SearchDialogLabels = {
     openAria: string;
@@ -329,6 +341,16 @@ const dictionaries: Record<Locale, Dictionary> = {
             newsletterErrorGeneric: "Không thể đăng ký. Vui lòng thử lại.",
             newsletterErrorInvalidEmail: "Email không hợp lệ.",
         },
+        story: {
+            regionLabel: "Khoảnh khắc",
+            archiveHeading: "Lưu trữ",
+            openAria: "Mở khoảnh khắc: {title}",
+            closeAria: "Đóng",
+            prevAria: "Trước",
+            nextAria: "Tiếp theo",
+            pauseAria: "Tạm dừng",
+            playAria: "Phát",
+        },
     },
     en: {
         metadata: {
@@ -463,6 +485,16 @@ const dictionaries: Record<Locale, Dictionary> = {
             newsletterSuccess: "Subscribed!",
             newsletterErrorGeneric: "Could not subscribe. Please try again.",
             newsletterErrorInvalidEmail: "Invalid email.",
+        },
+        story: {
+            regionLabel: "Stories",
+            archiveHeading: "Archive",
+            openAria: "Open story: {title}",
+            closeAria: "Close",
+            prevAria: "Previous",
+            nextAria: "Next",
+            pauseAria: "Pause",
+            playAria: "Play",
         },
     },
 };
