@@ -5,6 +5,8 @@ import { MoreStories } from "@/app/_components/more-stories";
 import { getAllPosts } from "@/lib/api";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isValidLocale, locales } from "@/i18n/config";
+import { StoryBar } from "@/app/[locale]/_components/stories/story-bar";
+import { stories } from "@/data/stories";
 import {
     LETSLIVE_URL,
     WEB_DEFAULT_AUTHOR,
@@ -171,6 +173,7 @@ export default async function Index({ params }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
             />
+            <StoryBar stories={stories} locale={locale} labels={dictionary.story} />
             <HeroPost
                 title={heroPost.title}
                 categories={heroPost.categories}
