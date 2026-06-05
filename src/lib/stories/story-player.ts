@@ -24,7 +24,13 @@ export function createInitialState(): PlayerState {
     return { open: false, groupIndex: 0, itemIndex: 0, paused: false, progress: 0 };
 }
 
-const CLOSED: PlayerState = { open: false, groupIndex: 0, itemIndex: 0, paused: false, progress: 0 };
+const CLOSED: PlayerState = {
+    open: false,
+    groupIndex: 0,
+    itemIndex: 0,
+    paused: false,
+    progress: 0,
+};
 
 function clamp01(value: number): number {
     if (value < 0) return 0;
@@ -39,7 +45,13 @@ function goNext(groups: StoryGroup[], state: PlayerState): PlayerState {
         return { ...state, itemIndex: state.itemIndex + 1, progress: 0, paused: false };
     }
     if (state.groupIndex + 1 < groups.length) {
-        return { ...state, groupIndex: state.groupIndex + 1, itemIndex: 0, progress: 0, paused: false };
+        return {
+            ...state,
+            groupIndex: state.groupIndex + 1,
+            itemIndex: 0,
+            progress: 0,
+            paused: false,
+        };
     }
     return CLOSED;
 }
@@ -51,12 +63,22 @@ function goPrev(groups: StoryGroup[], state: PlayerState): PlayerState {
     if (state.groupIndex > 0) {
         const prev = groups[state.groupIndex - 1];
         const lastItem = prev ? Math.max(0, prev.items.length - 1) : 0;
-        return { ...state, groupIndex: state.groupIndex - 1, itemIndex: lastItem, progress: 0, paused: false };
+        return {
+            ...state,
+            groupIndex: state.groupIndex - 1,
+            itemIndex: lastItem,
+            progress: 0,
+            paused: false,
+        };
     }
     return { ...state, progress: 0, paused: false }; // clamp at very start
 }
 
-export function reducer(groups: StoryGroup[], state: PlayerState, action: PlayerAction): PlayerState {
+export function reducer(
+    groups: StoryGroup[],
+    state: PlayerState,
+    action: PlayerAction,
+): PlayerState {
     switch (action.type) {
         case "OPEN":
             return {
