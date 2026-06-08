@@ -133,6 +133,8 @@ export type Dictionary = {
         nextAria: string;
         pauseAria: string;
         playAria: string;
+        muteAria: string;
+        unmuteAria: string;
     };
 };
 
@@ -352,6 +354,8 @@ const dictionaries: Record<Locale, Dictionary> = {
             nextAria: "Tiếp theo",
             pauseAria: "Tạm dừng",
             playAria: "Phát",
+            muteAria: "Tắt tiếng",
+            unmuteAria: "Bật tiếng",
         },
     },
     en: {
@@ -498,6 +502,8 @@ const dictionaries: Record<Locale, Dictionary> = {
             nextAria: "Next",
             pauseAria: "Pause",
             playAria: "Play",
+            muteAria: "Mute",
+            unmuteAria: "Unmute",
         },
     },
 };

@@ -32,6 +32,12 @@ export type StoryImageItem = StoryItemBase & {
     type: "image";
     src: string; // e.g. /assets/stories/grad-2026/photo-1.webp
     durationMs?: number;
+    // Optional music for this image. The viewer seeks the track to `startTime`
+    // (seconds, default 0) and plays it while the image is shown.
+    music?: {
+        src: string; // audio under public/, e.g. /music/song.mp3
+        startTime?: number; // seconds into the track to start
+    };
 };
 
 export type StoryVideoItem = StoryItemBase & {

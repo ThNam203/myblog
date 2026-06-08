@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { StoryLabels } from "@/i18n/dictionaries";
 import type { StoryGroup } from "@/interfaces/story";
@@ -23,6 +23,11 @@ export function StoryViewer({ locale, labels, player }: Props) {
     const { state, currentGroup, currentItem, close, next, prev, pause, resume, setProgress } =
         player;
     const videoRef = useRef<HTMLVideoElement>(null);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    // Last <audio> src we set, so we only reload+reseek when the track changes.
+    // Reset on close (the element unmounts), so a reopen re-applies the src.
+    const audioSrcRef = useRef<string | null>(null);
+    const [soundOn, setSoundOn] = useState(true);
     // Distinguish a tap (navigate) from a hold (pause only). A hold past
     // HOLD_MS sets holdRef so the trailing click is suppressed; keyboard
     // activation has no pointerdown, so holdRef stays false and navigates.
@@ -78,13 +83,68 @@ export function StoryViewer({ locale, labels, player }: Props) {
         };
     }, [state.open]);
 
-    // Keep the <video> element's play/pause in sync with the paused flag.
+    // Keep the <video> and music <audio> play/pause in sync with the paused flag.
     useEffect(() => {
         const video = videoRef.current;
-        if (!video) return;
-        if (state.paused) video.pause();
-        else void video.play().catch(() => {});
-    }, [state.paused, state.groupIndex, state.itemIndex]);
+        if (video) {
+            if (state.paused) video.pause();
+            else void video.play().catch(() => {});
+        }
+        const audio = audioRef.current;
+        if (audio) {
+            if (state.paused) audio.pause();
+            else if (currentItem?.type === "image" && currentItem.music) {
+                void audio.play().catch(() => {});
+            }
+        }
+    }, [state.paused, state.groupIndex, state.itemIndex, currentItem]);
+
+    // Per-image music: when an image with `music` becomes active, point the
+    // <audio> at its track and seek to `startTime`. An image without music
+    // pauses the audio; video items leave it untouched (overlap is intentional).
+    useEffect(() => {
+        if (!state.open) return;
+        const audio = audioRef.current;
+        if (!audio || !currentItem) return;
+        if (currentItem.type !== "image") return; // video: no audio change
+        if (!currentItem.music) {
+            audio.pause();
+            return;
+        }
+        const { src, startTime = 0 } = currentItem.music;
+        const startPlayback = () => {
+            try {
+                audio.currentTime = startTime;
+            } catch {
+                // currentTime can throw if the media is not seekable yet; ignore.
+            }
+            if (!state.paused) void audio.play().catch(() => {});
+        };
+        if (audioSrcRef.current !== src) {
+            audioSrcRef.current = src;
+            audio.src = src;
+            const onLoaded = () => {
+                audio.removeEventListener("loadedmetadata", onLoaded);
+                startPlayback();
+            };
+            audio.addEventListener("loadedmetadata", onLoaded);
+            audio.load();
+            return () => audio.removeEventListener("loadedmetadata", onLoaded);
+        }
+        startPlayback();
+    }, [state.open, state.groupIndex, state.itemIndex, currentItem]);
+
+    // Bind the mute toggle to both elements (re-applied when the item changes so
+    // a freshly mounted <video> picks up the current preference).
+    useEffect(() => {
+        if (audioRef.current) audioRef.current.muted = !soundOn;
+        if (videoRef.current) videoRef.current.muted = !soundOn;
+    }, [soundOn, state.groupIndex, state.itemIndex]);
+
+    // The <audio> element unmounts on close; forget the src so a reopen re-sets it.
+    useEffect(() => {
+        if (!state.open) audioSrcRef.current = null;
+    }, [state.open]);
 
     if (!state.open || !currentGroup || !currentItem) return null;
 
@@ -107,14 +167,29 @@ export function StoryViewer({ locale, labels, player }: Props) {
                         <span className="text-sm font-semibold drop-shadow">
                             {currentGroup.title[locale]}
                         </span>
-                        <button
-                            type="button"
-                            onClick={close}
-                            aria-label={labels.closeAria}
-                            className="text-2xl leading-none text-white/90 hover:text-white"
-                        >
-                            ✕
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setSoundOn((s) => !s)}
+                                aria-label={soundOn ? labels.muteAria : labels.unmuteAria}
+                                aria-pressed={!soundOn}
+                                className="text-white/90 drop-shadow hover:text-white"
+                            >
+                                {soundOn ? (
+                                    <SoundOnIcon className="h-5 w-5" />
+                                ) : (
+                                    <SoundOffIcon className="h-5 w-5" />
+                                )}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={close}
+                                aria-label={labels.closeAria}
+                                className="text-2xl leading-none text-white/90 hover:text-white"
+                            >
+                                ✕
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -133,7 +208,6 @@ export function StoryViewer({ locale, labels, player }: Props) {
                             src={currentItem.src}
                             poster={currentItem.poster}
                             className="max-h-full max-w-full object-contain"
-                            muted
                             playsInline
                             autoPlay
                             preload="metadata"
@@ -182,7 +256,10 @@ export function StoryViewer({ locale, labels, player }: Props) {
                                     <span className="inline-flex items-center gap-1 text-xs text-white/90">
                                         <PostIcon className="h-4 w-4 shrink-0" />
                                         {postLink ? (
-                                            <a href={postLink} className="font-medium hover:underline">
+                                            <a
+                                                href={postLink}
+                                                className="font-medium hover:underline"
+                                            >
                                                 {postTitle}
                                             </a>
                                         ) : (
@@ -213,8 +290,51 @@ export function StoryViewer({ locale, labels, player }: Props) {
                     aria-label={labels.nextAria}
                     className="absolute inset-y-0 right-0 z-0 w-1/3 cursor-default"
                 />
+
+                {/* Per-image music. Hidden; controlled imperatively via audioRef. */}
+                <audio ref={audioRef} preload="metadata" />
             </div>
         </div>
+    );
+}
+
+function SoundOnIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+        >
+            <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </svg>
+    );
+}
+
+function SoundOffIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+        >
+            <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+            <path d="m23 9-6 6" />
+            <path d="m17 9 6 6" />
+        </svg>
     );
 }
 

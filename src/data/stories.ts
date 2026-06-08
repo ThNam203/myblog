@@ -33,6 +33,7 @@ export const stories: StoryGroup[] = [
                 id: "fd-1",
                 type: "image",
                 src: "/assets/images/20260520/pizza-1.webp",
+                music: { src: "/music/nang_am_trong_tim.mp3", startTime: 15 },
                 caption: { vi: "Pizza tối qua", en: "Pizza last night" },
                 address: {
                     name: { vi: "Pizza 4P's", en: "Pizza 4P's" },
@@ -51,12 +52,14 @@ export const stories: StoryGroup[] = [
                 type: "image",
                 src: "/assets/images/20260520/ramennn.webp",
                 durationMs: 4000,
+                music: { src: "/music/to_mau.mp3", startTime: 20 },
                 caption: { vi: "Ramen nóng hổi", en: "Hot ramen" },
             },
             {
                 id: "fd-3",
                 type: "image",
                 src: "/assets/images/20260520/pho-van-hoa.webp",
+                music: { src: "/music/sai_gon_hom_nay_mua.mp3", startTime: 30 },
                 caption: { vi: "Phố Văn Hoá", en: "Pho Van Hoa" },
             },
         ],
@@ -71,6 +74,7 @@ export const stories: StoryGroup[] = [
                 id: "rn-1",
                 type: "image",
                 src: "/assets/images/20260520/hard-rain.webp",
+                music: { src: "/music/giua_dai_lo_dong_tay.mp3", startTime: 15 },
                 caption: { vi: "Mưa lớn quá", en: "Pouring rain" },
                 address: {
                     name: { vi: "Thủ Đức, Sài Gòn", en: "Thu Duc, Saigon" },
@@ -80,6 +84,7 @@ export const stories: StoryGroup[] = [
                 id: "rn-2",
                 type: "image",
                 src: "/assets/images/20260520/jogging-under-the-rain.webp",
+                music: { src: "/music/nhung_dieu_nho_nhoi.mp3", startTime: 45 },
                 caption: { vi: "Chạy bộ dưới mưa", en: "Jogging in the rain" },
             },
         ],
