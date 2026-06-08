@@ -1,6 +1,31 @@
-import type { StoryGroup } from "@/interfaces/story";
+import type { StoryGroup, StoryItem } from "@/interfaces/story";
 
 export const DEFAULT_IMAGE_DURATION_MS = 5000;
+
+// The next `count` items in play order starting after (groupIndex, itemIndex),
+// crossing group boundaries. Used to prefetch media before the viewer needs it.
+export function upcomingItems(
+    groups: StoryGroup[],
+    groupIndex: number,
+    itemIndex: number,
+    count: number,
+): StoryItem[] {
+    const result: StoryItem[] = [];
+    let g = groupIndex;
+    let i = itemIndex + 1;
+    while (result.length < count && g < groups.length) {
+        const group = groups[g];
+        if (!group) break;
+        if (i < group.items.length) {
+            result.push(group.items[i]);
+            i += 1;
+        } else {
+            g += 1;
+            i = 0;
+        }
+    }
+    return result;
+}
 
 export type PlayerState = {
     open: boolean;

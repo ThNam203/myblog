@@ -6,6 +6,8 @@ import type { StoryLabels } from "@/i18n/dictionaries";
 import type { StoryGroup } from "@/interfaces/story";
 import { StoryProgress } from "./story-progress";
 import { pickLocalized } from "@/lib/stories/localized";
+import { upcomingItems } from "@/lib/stories/story-player";
+import { prefetchAudio, prefetchImage } from "@/lib/stories/media-prefetch";
 import type { useStoryPlayer } from "./use-story-player";
 
 const HOLD_MS = 250; // press longer than this is a hold (pause), not a tap (navigate)
@@ -19,7 +21,7 @@ type Props = {
     player: Player;
 };
 
-export function StoryViewer({ locale, labels, player }: Props) {
+export function StoryViewer({ groups, locale, labels, player }: Props) {
     const { state, currentGroup, currentItem, close, next, prev, pause, resume, setProgress } =
         player;
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -146,11 +148,22 @@ export function StoryViewer({ locale, labels, player }: Props) {
         if (!state.open) audioSrcRef.current = null;
     }, [state.open]);
 
+    // Warm the cache for upcoming media so forward navigation is instant:
+    // images for the next two items, the track for the very next one.
+    useEffect(() => {
+        if (!state.open) return;
+        upcomingItems(groups, state.groupIndex, state.itemIndex, 2).forEach((item, index) => {
+            if (item.type !== "image") return;
+            prefetchImage(item.src);
+            if (index === 0 && item.music) prefetchAudio(item.music.src);
+        });
+    }, [state.open, state.groupIndex, state.itemIndex, groups]);
+
     if (!state.open || !currentGroup || !currentItem) return null;
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black"
             role="dialog"
             aria-modal="true"
             aria-label={labels.regionLabel}
@@ -200,6 +213,8 @@ export function StoryViewer({ locale, labels, player }: Props) {
                             src={currentItem.src}
                             alt={currentItem.caption?.[locale] ?? currentGroup.title[locale]}
                             className="max-h-full max-w-full object-contain"
+                            fetchPriority="high"
+                            decoding="async"
                         />
                     ) : (
                         <video
@@ -292,7 +307,7 @@ export function StoryViewer({ locale, labels, player }: Props) {
                 />
 
                 {/* Per-image music. Hidden; controlled imperatively via audioRef. */}
-                <audio ref={audioRef} preload="metadata" />
+                <audio ref={audioRef} preload="auto" />
             </div>
         </div>
     );

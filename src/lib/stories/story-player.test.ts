@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createInitialState, reducer } from "./story-player";
+import { createInitialState, reducer, upcomingItems } from "./story-player";
 import type { StoryGroup } from "@/interfaces/story";
 
 function img(id: string) {
@@ -115,4 +115,23 @@ test("CLOSE closes", () => {
     let s = r(createInitialState(), { type: "OPEN", groupIndex: 0 });
     s = r(s, { type: "CLOSE" });
     assert.equal(s.open, false);
+});
+
+test("upcomingItems returns the next items across group boundaries", () => {
+    assert.deepEqual(
+        upcomingItems(GROUPS, 0, 0, 2).map((i) => i.id),
+        ["a2", "b1"],
+    );
+});
+
+test("upcomingItems stops at the end of the last group", () => {
+    assert.deepEqual(upcomingItems(GROUPS, 1, 0, 2), []);
+    assert.deepEqual(
+        upcomingItems(GROUPS, 0, 1, 5).map((i) => i.id),
+        ["b1"],
+    );
+});
+
+test("upcomingItems with count 0 returns nothing", () => {
+    assert.deepEqual(upcomingItems(GROUPS, 0, 0, 0), []);
 });

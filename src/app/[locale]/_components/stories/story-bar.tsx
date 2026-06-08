@@ -6,8 +6,17 @@ import type { Locale } from "@/i18n/config";
 import type { StoryLabels } from "@/i18n/dictionaries";
 import type { StoryGroup } from "@/interfaces/story";
 import { isStoryExpired } from "@/lib/stories/story-sections";
+import { prefetchAudio, prefetchImage } from "@/lib/stories/media-prefetch";
 import { useStoryPlayer } from "./use-story-player";
 import { StoryViewer } from "./story-viewer";
+
+// Warm a group's first item (image + track) so opening the ring is instant.
+function warmGroup(group: StoryGroup): void {
+    const first = group.items[0];
+    if (first?.type !== "image") return;
+    prefetchImage(first.src);
+    if (first.music) prefetchAudio(first.music.src);
+}
 
 type Props = {
     stories: StoryGroup[];
@@ -51,6 +60,8 @@ export function StoryBar({ stories, locale, labels }: Props) {
                             <button
                                 type="button"
                                 onClick={() => player.open(index)}
+                                onPointerEnter={() => warmGroup(group)}
+                                onFocus={() => warmGroup(group)}
                                 aria-label={labels.openAria.replace("{title}", group.title[locale])}
                                 className="flex w-20 flex-col items-center gap-1 focus:outline-none"
                             >
