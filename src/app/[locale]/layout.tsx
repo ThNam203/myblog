@@ -18,6 +18,7 @@ import {
 import { getAuthModalLabels, getDictionary, getSearchDialogLabels } from "@/i18n/dictionaries";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { MUSIC_TRACKS } from "@/lib/music-tracks";
+import { buildNoFoucScript } from "@/lib/theme/no-fouc-script";
 import { Intro } from "../_components/intro";
 import "../globals.css";
 
@@ -25,37 +26,7 @@ const DEFAULT_OG_IMAGE = "/assets/images/05052026_raining.webp";
 
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: true });
 const THEME_STORAGE_KEY = "nam-blog-theme";
-const noFoucScript = `(() => {
-  const SYSTEM = "system";
-  const DARK = "dark";
-  const LIGHT = "light";
-  const storageKey = "${THEME_STORAGE_KEY}";
-
-  const modifyTransition = () => {
-    const css = document.createElement("style");
-    css.textContent = "*,*:after,*:before{transition:none !important;}";
-    document.head.appendChild(css);
-    return () => {
-      getComputedStyle(document.body);
-      setTimeout(() => document.head.removeChild(css), 1);
-    };
-  };
-
-  const media = matchMedia("(prefers-color-scheme: dark)");
-  window.updateDOM = () => {
-    const restoreTransitions = modifyTransition();
-    const mode = localStorage.getItem(storageKey) ?? SYSTEM;
-    const systemMode = media.matches ? DARK : LIGHT;
-    const resolvedMode = mode === SYSTEM ? systemMode : mode;
-    const classList = document.documentElement.classList;
-    if (resolvedMode === DARK) classList.add(DARK);
-    else classList.remove(DARK);
-    document.documentElement.setAttribute("data-mode", mode);
-    restoreTransitions();
-  };
-  window.updateDOM();
-  media.addEventListener("change", window.updateDOM);
-})();`;
+const noFoucScript = buildNoFoucScript(THEME_STORAGE_KEY);
 
 type Props = {
     children: React.ReactNode;
