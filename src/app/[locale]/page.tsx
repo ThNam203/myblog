@@ -174,6 +174,9 @@ export default async function Index({ params }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
             />
             <StoryBar stories={stories} locale={locale} labels={dictionary.story} />
+            <h2 className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
+                {dictionary.ui.latestHeading}
+            </h2>
             <HeroPost
                 title={heroPost.title}
                 categories={heroPost.categories}

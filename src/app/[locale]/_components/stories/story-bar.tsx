@@ -34,6 +34,9 @@ export function StoryBar({ stories, locale, labels }: Props) {
 
     return (
         <section aria-label={labels.regionLabel} className="mb-8 mt-4">
+            <h2 className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
+                {labels.regionLabel}
+            </h2>
             {active.length > 0 && (
                 <Ring
                     row={active}
@@ -45,9 +48,9 @@ export function StoryBar({ stories, locale, labels }: Props) {
             )}
             {expired.length > 0 && (
                 <div className="mt-6">
-                    <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-400">
                         {labels.archiveHeading}
-                    </h2>
+                    </h3>
                     <Ring
                         row={expired}
                         locale={locale}

@@ -20,6 +20,7 @@ export type Dictionary = {
         headerTitle: string;
         blogHeading: string;
         moreStories: string;
+        latestHeading: string;
         alertTextPrefix: string;
         alertLinkLabel: string;
         postsInCategory: string;
@@ -236,6 +237,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             headerTitle: "Blog",
             blogHeading: "Blog.",
             moreStories: "Bài viết khác",
+            latestHeading: "Mới nhất",
             alertTextPrefix: "Đây là blog của mình. Bạn cũng có thể xem thêm",
             alertLinkLabel: "website Let's Live",
             postsInCategory: "Bài viết trong chủ đề:",
@@ -382,6 +384,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             headerTitle: "Blog",
             blogHeading: "Blog.",
             moreStories: "More Stories",
+            latestHeading: "Latest",
             alertTextPrefix: "This is my blog. You can also check out my",
             alertLinkLabel: "Let's Live website",
             postsInCategory: "Posts in:",
