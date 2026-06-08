@@ -1,6 +1,6 @@
 import type { StoryGroup, StoryItem } from "@/interfaces/story";
 
-export const DEFAULT_IMAGE_DURATION_MS = 5000;
+export const DEFAULT_IMAGE_DURATION_MS = 15000;
 
 // The next `count` items in play order starting after (groupIndex, itemIndex),
 // crossing group boundaries. Used to prefetch media before the viewer needs it.

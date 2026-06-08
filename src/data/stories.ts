@@ -51,7 +51,6 @@ export const stories: StoryGroup[] = [
                 id: "fd-2",
                 type: "image",
                 src: "/assets/images/20260520/ramennn.webp",
-                durationMs: 4000,
                 music: { src: "/music/to_mau.mp3", startTime: 20 },
                 caption: { vi: "Ramen nóng hổi", en: "Hot ramen" },
             },
