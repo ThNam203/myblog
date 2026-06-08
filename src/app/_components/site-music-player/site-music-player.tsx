@@ -10,6 +10,7 @@ import {
     type ChangeEvent,
 } from "react";
 import type { MusicTrack } from "@/lib/music-tracks";
+import { useStoriesOpen } from "@/lib/stories/stories-open-context";
 import { MINIMIZED_KEY } from "./constants";
 import { ExpandedPlayerBar } from "./expanded-player-bar";
 import { MinimizedPlayerFab } from "./minimized-player-fab";
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function SiteMusicPlayer({ tracks, labels }: Props) {
+    const { isOpen: storiesOpen } = useStoriesOpen();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [minimized, setMinimized] = useState(false);
@@ -28,6 +30,7 @@ export function SiteMusicPlayer({ tracks, labels }: Props) {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const wasPlayingBeforeStoriesRef = useRef(false);
 
     const track = tracks[currentIndex];
     const hasPlaylist = tracks.length > 1;
@@ -57,7 +60,9 @@ export function SiteMusicPlayer({ tracks, labels }: Props) {
         localStorage.setItem(MINIMIZED_KEY, minimized ? "1" : "0");
         const main = document.getElementById("site-main");
         if (main) {
-            if (minimized) {
+            if (storiesOpen) {
+                main.classList.remove("pb-28", "pb-6");
+            } else if (minimized) {
                 main.classList.remove("pb-28");
                 main.classList.add("pb-6");
             } else {
@@ -65,7 +70,26 @@ export function SiteMusicPlayer({ tracks, labels }: Props) {
                 main.classList.remove("pb-6");
             }
         }
-    }, [minimized, hydrated]);
+    }, [minimized, hydrated, storiesOpen]);
+
+    // Hide the site player while stories are open; pause if playing and resume on exit.
+    useEffect(() => {
+        const el = audioRef.current;
+        if (storiesOpen) {
+            wasPlayingBeforeStoriesRef.current = isPlaying;
+            if (isPlaying && el) {
+                el.pause();
+                setIsPlaying(false);
+            }
+            return;
+        }
+        if (wasPlayingBeforeStoriesRef.current && el) {
+            wasPlayingBeforeStoriesRef.current = false;
+            void el.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+        }
+        // `isPlaying` is read only when `storiesOpen` flips true.
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional
+    }, [storiesOpen]);
 
     useEffect(() => {
         if (!isPlaying) {
@@ -167,31 +191,32 @@ export function SiteMusicPlayer({ tracks, labels }: Props) {
                     setIsPlaying(false);
                 }}
             />
-            {minimized ? (
-                <MinimizedPlayerFab
-                    gradientId={miniProgressGradientId}
-                    labels={labels}
-                    progress={minimizedProgress}
-                    onExpand={() => setMinimized(false)}
-                />
-            ) : (
-                <ExpandedPlayerBar
-                    currentIndex={currentIndex}
-                    currentTime={currentTime}
-                    goNext={goNext}
-                    goPrev={goPrev}
-                    hasPlaylist={hasPlaylist}
-                    isPlaying={isPlaying}
-                    labels={labels}
-                    onMinimize={() => setMinimized(true)}
-                    onSeek={onSeek}
-                    onSelectTrack={selectTrack}
-                    safeDuration={safeDuration}
-                    togglePlay={togglePlay}
-                    track={track}
-                    tracks={tracks}
-                />
-            )}
+            {!storiesOpen &&
+                (minimized ? (
+                    <MinimizedPlayerFab
+                        gradientId={miniProgressGradientId}
+                        labels={labels}
+                        progress={minimizedProgress}
+                        onExpand={() => setMinimized(false)}
+                    />
+                ) : (
+                    <ExpandedPlayerBar
+                        currentIndex={currentIndex}
+                        currentTime={currentTime}
+                        goNext={goNext}
+                        goPrev={goPrev}
+                        hasPlaylist={hasPlaylist}
+                        isPlaying={isPlaying}
+                        labels={labels}
+                        onMinimize={() => setMinimized(true)}
+                        onSeek={onSeek}
+                        onSelectTrack={selectTrack}
+                        safeDuration={safeDuration}
+                        togglePlay={togglePlay}
+                        track={track}
+                        tracks={tracks}
+                    />
+                ))}
         </>
     );
 }

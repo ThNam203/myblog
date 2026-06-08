@@ -7,6 +7,7 @@ import type { StoryGroup } from "@/interfaces/story";
 import { StoryProgress } from "./story-progress";
 import { pickLocalized } from "@/lib/stories/localized";
 import { upcomingItems } from "@/lib/stories/story-player";
+import { getMusicTrackBySrc } from "@/lib/music-tracks";
 import { prefetchAudio, prefetchImage } from "@/lib/stories/media-prefetch";
 import type { useStoryPlayer } from "./use-story-player";
 
@@ -161,6 +162,11 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
 
     if (!state.open || !currentGroup || !currentItem) return null;
 
+    const musicTrack =
+        currentItem.type === "image" && currentItem.music
+            ? getMusicTrackBySrc(currentItem.music.src)
+            : undefined;
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black"
@@ -177,9 +183,17 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                         progress={state.progress}
                     />
                     <div className="flex items-center justify-between text-white">
-                        <span className="text-sm font-semibold drop-shadow">
-                            {currentGroup.title[locale]}
-                        </span>
+                        <div className="flex flex-col gap-2">
+                            <p className="text-sm font-semibold drop-shadow">
+                                {currentGroup.title[locale]}
+                            </p>
+                            {musicTrack && (
+                                <>
+                                    <p className="text-xs text-white/80 font-semibold">{musicTrack.title}</p>
+                                    <p className="text-xs text-white/70">{musicTrack.artist}</p>
+                                </>
+                            )}
+                        </div>
                         <div className="flex items-center gap-3">
                             <button
                                 type="button"

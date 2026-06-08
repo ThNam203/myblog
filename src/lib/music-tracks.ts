@@ -51,3 +51,7 @@ export const MUSIC_TRACKS: MusicTrack[] = [
         artist: "Uyên Linh",
     },
 ];
+
+export function getMusicTrackBySrc(src: string): MusicTrack | undefined {
+    return MUSIC_TRACKS.find((track) => track.src === src);
+}

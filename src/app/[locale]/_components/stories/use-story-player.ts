@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useState } from "react";
 import type { StoryGroup } from "@/interfaces/story";
+import { useStoriesOpen } from "@/lib/stories/stories-open-context";
 import {
     createInitialState,
     DEFAULT_IMAGE_DURATION_MS,
@@ -25,12 +26,18 @@ function usePrefersReducedMotion(): boolean {
 }
 
 export function useStoryPlayer(groups: StoryGroup[]) {
+    const { setOpen: setStoriesOpen } = useStoriesOpen();
     const [state, dispatch] = useReducer(
         (s: PlayerState, a: PlayerAction) => reducer(groups, s, a),
         undefined,
         createInitialState,
     );
     const reducedMotion = usePrefersReducedMotion();
+
+    useEffect(() => {
+        setStoriesOpen(state.open);
+        return () => setStoriesOpen(false);
+    }, [state.open, setStoriesOpen]);
 
     const currentGroup = state.open ? groups[state.groupIndex] : undefined;
     const currentItem = currentGroup?.items[state.itemIndex];

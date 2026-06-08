@@ -18,6 +18,7 @@ import {
 import { getAuthModalLabels, getDictionary, getSearchDialogLabels } from "@/i18n/dictionaries";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { MUSIC_TRACKS } from "@/lib/music-tracks";
+import { StoriesOpenProvider } from "@/lib/stories/stories-open-context";
 import { buildNoFoucScript } from "@/lib/theme/no-fouc-script";
 import { Intro } from "../_components/intro";
 import "../globals.css";
@@ -160,27 +161,29 @@ export default async function LocaleLayout({ children, params }: Props) {
                         />
                     </div>
                 </header>
-                <main id="site-main" className="pb-8 px-4 md:px-0">
-                    {children}
-                </main>
-                {MUSIC_TRACKS.length > 0 && (
-                    <SiteMusicPlayer
-                        tracks={MUSIC_TRACKS}
-                        labels={{
-                            play: dictionary.ui.musicPlay,
-                            pause: dictionary.ui.musicPause,
-                            expand: dictionary.ui.musicExpand,
-                            collapse: dictionary.ui.musicCollapse,
-                            previous: dictionary.ui.musicPrevious,
-                            next: dictionary.ui.musicNext,
-                            minimize: dictionary.ui.musicMinimize,
-                            restore: dictionary.ui.musicRestore,
-                            showPlaylist: dictionary.ui.musicShowPlaylist,
-                            playlistHeading: dictionary.ui.musicPlaylistHeading,
-                            nowPlaying: dictionary.ui.musicNowPlaying,
-                        }}
-                    />
-                )}
+                <StoriesOpenProvider>
+                    <main id="site-main" className="pb-8 px-4 md:px-0">
+                        {children}
+                    </main>
+                    {MUSIC_TRACKS.length > 0 && (
+                        <SiteMusicPlayer
+                            tracks={MUSIC_TRACKS}
+                            labels={{
+                                play: dictionary.ui.musicPlay,
+                                pause: dictionary.ui.musicPause,
+                                expand: dictionary.ui.musicExpand,
+                                collapse: dictionary.ui.musicCollapse,
+                                previous: dictionary.ui.musicPrevious,
+                                next: dictionary.ui.musicNext,
+                                minimize: dictionary.ui.musicMinimize,
+                                restore: dictionary.ui.musicRestore,
+                                showPlaylist: dictionary.ui.musicShowPlaylist,
+                                playlistHeading: dictionary.ui.musicPlaylistHeading,
+                                nowPlaying: dictionary.ui.musicNowPlaying,
+                            }}
+                        />
+                    )}
+                </StoriesOpenProvider>
                 <Footer
                     description={dictionary.metadata.description}
                     sideWebsiteUrl={LETSLIVE_URL}
