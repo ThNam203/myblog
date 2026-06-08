@@ -4,7 +4,7 @@ import { createInitialState, reducer } from "./story-player";
 import type { StoryGroup } from "@/interfaces/story";
 
 function img(id: string) {
-    return { id, type: "image" as const, src: `/${id}.webp`, createdAt: "2026-06-05T00:00:00.000Z" };
+    return { id, type: "image" as const, src: `/${id}.webp` };
 }
 // group A: 2 items, group B: 1 item
 const GROUPS: StoryGroup[] = [

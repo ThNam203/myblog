@@ -24,7 +24,6 @@ export type StoryPostRef = {
 type StoryItemBase = {
     id: string;
     caption?: Localized;
-    createdAt: string; // ISO 8601
     address?: StoryAddress; // optional, single, shown in the viewer
     post?: StoryPostRef; // optional, single, shown in the viewer
 };

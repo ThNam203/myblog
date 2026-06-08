@@ -22,7 +22,6 @@ function group(id: string, ageHours: number, activeForMs?: number): StoryGroup {
                 id: `${id}-1`,
                 type: "image",
                 src: `/s/${id}/1.webp`,
-                createdAt: new Date(NOW).toISOString(),
             },
         ],
     };
