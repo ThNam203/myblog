@@ -1,4 +1,5 @@
 import type { StoryGroup } from "@/interfaces/story";
+import { isFilledLocalized } from "./localized";
 
 export const DEFAULT_ACTIVE_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -56,6 +57,12 @@ export function assertStoriesValid(groups: StoryGroup[]): void {
             const itemType: string = item.type;
             if (itemType !== "image" && itemType !== "video") {
                 throw new Error(`Invalid stories: item "${itemId}" has unknown type`);
+            }
+            if (item.address && !isFilledLocalized(item.address.name)) {
+                throw new Error(`Invalid stories: item "${itemId}" address name needs vi + en`);
+            }
+            if (item.post && !isFilledLocalized(item.post.title)) {
+                throw new Error(`Invalid stories: item "${itemId}" post title needs vi + en`);
             }
         }
     }

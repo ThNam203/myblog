@@ -5,6 +5,7 @@ import type { Locale } from "@/i18n/config";
 import type { StoryLabels } from "@/i18n/dictionaries";
 import type { StoryGroup } from "@/interfaces/story";
 import { StoryProgress } from "./story-progress";
+import { pickLocalized } from "@/lib/stories/localized";
 import type { useStoryPlayer } from "./use-story-player";
 
 const HOLD_MS = 250; // press longer than this is a hold (pause), not a tap (navigate)
@@ -145,10 +146,51 @@ export function StoryViewer({ locale, labels, player }: Props) {
                     )}
                 </div>
 
-                {/* Caption */}
-                {currentItem.caption && (
-                    <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 to-transparent p-4 pb-8 text-center text-sm text-white">
-                        {currentItem.caption[locale]}
+                {/* Caption + address + related post */}
+                {(currentItem.caption || currentItem.address || currentItem.post) && (
+                    <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 bg-gradient-to-t from-black/80 to-transparent p-4 pb-8 text-center text-white">
+                        {currentItem.caption && (
+                            <p className="text-sm">{currentItem.caption[locale]}</p>
+                        )}
+                        {currentItem.address &&
+                            (() => {
+                                const addressLink = pickLocalized(currentItem.address.link, locale);
+                                const addressName = currentItem.address.name[locale];
+                                return (
+                                    <span className="inline-flex items-center gap-1 text-xs text-white/90">
+                                        <PinIcon className="h-4 w-4 shrink-0" />
+                                        {addressLink ? (
+                                            <a
+                                                href={addressLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="font-medium hover:underline"
+                                            >
+                                                {addressName}
+                                            </a>
+                                        ) : (
+                                            <span className="font-medium">{addressName}</span>
+                                        )}
+                                    </span>
+                                );
+                            })()}
+                        {currentItem.post &&
+                            (() => {
+                                const postLink = pickLocalized(currentItem.post.link, locale);
+                                const postTitle = currentItem.post.title[locale];
+                                return (
+                                    <span className="inline-flex items-center gap-1 text-xs text-white/90">
+                                        <PostIcon className="h-4 w-4 shrink-0" />
+                                        {postLink ? (
+                                            <a href={postLink} className="font-medium hover:underline">
+                                                {postTitle}
+                                            </a>
+                                        ) : (
+                                            <span className="font-medium">{postTitle}</span>
+                                        )}
+                                    </span>
+                                );
+                            })()}
                     </div>
                 )}
 
@@ -173,5 +215,44 @@ export function StoryViewer({ locale, labels, player }: Props) {
                 />
             </div>
         </div>
+    );
+}
+
+function PinIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+        >
+            <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+        </svg>
+    );
+}
+
+function PostIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+        >
+            <path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
+            <path d="M14 4v5h5" />
+            <path d="M8 13h8M8 17h6" />
+        </svg>
     );
 }

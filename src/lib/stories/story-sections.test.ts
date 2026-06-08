@@ -71,3 +71,28 @@ test("assertStoriesValid throws on empty items", () => {
 test("assertStoriesValid accepts a valid set", () => {
     assert.doesNotThrow(() => assertStoriesValid([group("ok", 1)]));
 });
+
+test("assertStoriesValid throws when address name is missing a locale", () => {
+    const g = group("addr", 1);
+    g.items[0].address = { name: { vi: " ", en: " " } };
+    assert.throws(() => assertStoriesValid([g]), /address name needs vi \+ en/i);
+});
+
+test("assertStoriesValid throws when post title is missing a locale", () => {
+    const g = group("post", 1);
+    g.items[0].post = { title: { vi: "Có", en: "" } };
+    assert.throws(() => assertStoriesValid([g]), /post title needs vi \+ en/i);
+});
+
+test("assertStoriesValid accepts address + post with localized text and hybrid links", () => {
+    const g = group("meta", 1);
+    g.items[0].address = {
+        name: { vi: "Cafe X", en: "Cafe X" },
+        link: "https://maps.example/x", // locale-neutral string
+    };
+    g.items[0].post = {
+        title: { vi: "Hôm đó", en: "That day" },
+        link: { vi: "/vi/posts/that-day", en: "/en/posts/that-day" }, // per-locale
+    };
+    assert.doesNotThrow(() => assertStoriesValid([g]));
+});
