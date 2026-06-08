@@ -11,6 +11,17 @@ function windowFor(group: StoryGroup, defaultWindowMs: number): number {
     return typeof group.activeForMs === "number" ? group.activeForMs : defaultWindowMs;
 }
 
+// True once a group has aged past its active window (per-group `activeForMs`
+// or the 24h default). Caller must pass a client-side `now` — on the SSG home
+// page a build-time `now` would be stale.
+export function isStoryExpired(
+    group: StoryGroup,
+    now: number,
+    defaultWindowMs: number = DEFAULT_ACTIVE_WINDOW_MS,
+): boolean {
+    return now - Date.parse(group.createdAt) >= windowFor(group, defaultWindowMs);
+}
+
 export function splitStorySections(
     groups: StoryGroup[],
     now: number,
