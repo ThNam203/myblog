@@ -182,7 +182,7 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                         currentIndex={state.itemIndex}
                         progress={state.progress}
                     />
-                    <div className="flex items-center justify-between text-white">
+                    <div className="flex justify-between text-white">
                         <div className="flex flex-col gap-2">
                             <p className="text-sm font-semibold drop-shadow">
                                 {currentGroup.title[locale]}
@@ -194,25 +194,25 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                                 </>
                             )}
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex gap-3">
                             <button
                                 type="button"
                                 onClick={() => setSoundOn((s) => !s)}
                                 aria-label={soundOn ? labels.muteAria : labels.unmuteAria}
                                 aria-pressed={!soundOn}
-                                className="text-white/90 drop-shadow hover:text-white"
+                                className="text-white/90 drop-shadow hover:text-white h-6 w-6"
                             >
                                 {soundOn ? (
-                                    <SoundOnIcon className="h-5 w-5" />
+                                    <SoundOnIcon className="h-full w-full" />
                                 ) : (
-                                    <SoundOffIcon className="h-5 w-5" />
+                                    <SoundOffIcon className="h-full w-full" />
                                 )}
                             </button>
                             <button
                                 type="button"
                                 onClick={close}
                                 aria-label={labels.closeAria}
-                                className="text-2xl leading-none text-white/90 hover:text-white"
+                                className="text-2xl leading-none text-white/90 hover:text-white h-6 w-6"
                             >
                                 ✕
                             </button>
