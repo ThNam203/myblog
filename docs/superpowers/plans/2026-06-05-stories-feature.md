@@ -630,9 +630,9 @@ In `dictionaries.vi`, add a `story` block as a sibling of `ui`:
 
 ```ts
         story: {
-            regionLabel: "Khoảnh khắc",
+            regionLabel: "Story",
             archiveHeading: "Lưu trữ",
-            openAria: "Mở khoảnh khắc: {title}",
+            openAria: "Mở story: {title}",
             closeAria: "Đóng",
             prevAria: "Trước",
             nextAria: "Tiếp theo",

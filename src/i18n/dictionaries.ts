@@ -344,9 +344,9 @@ const dictionaries: Record<Locale, Dictionary> = {
             newsletterErrorInvalidEmail: "Email không hợp lệ.",
         },
         story: {
-            regionLabel: "Khoảnh khắc",
+            regionLabel: "Stories",
             archiveHeading: "Lưu trữ",
-            openAria: "Mở khoảnh khắc: {title}",
+            openAria: "Mở story: {title}",
             closeAria: "Đóng",
             prevAria: "Trước",
             nextAria: "Tiếp theo",
