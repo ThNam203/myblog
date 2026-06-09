@@ -24,6 +24,24 @@ import type { StoryGroup } from "@/interfaces/story";
  */
 export const stories: StoryGroup[] = [
     {
+        id: "night-fury",
+        title: { vi: "Light Fury? No, Night Fury!", en: "Light Fury? No, Night Fury!" },
+        cover: "/assets/stories/20260609/night_fury.webp",
+        createdAt: "2026-06-09T10:51:43.523Z",
+        items: [
+            {
+                id: "nf-1",
+                type: "image",
+                src: "/assets/stories/20260609/night_fury.jpg",
+                music: { src: "/music/nhung_dieu_nho_nhoi.mp3", startTime: 30 },
+                caption: {
+                    vi: "Rồng trắng thành rồng đen :))",
+                    en: "White dragon becomes black dragon :)",
+                },
+            },
+        ],
+    },
+    {
         id: "an-gi-hom-nay",
         title: { vi: "Ăn gì hôm nay", en: "Food today" },
         cover: "/assets/images/20260520/pizza-1.webp",

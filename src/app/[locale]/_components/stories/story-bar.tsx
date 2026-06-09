@@ -63,7 +63,7 @@ export function StoryBar({ stories, locale, labels }: Props) {
                                 onPointerEnter={() => warmGroup(group)}
                                 onFocus={() => warmGroup(group)}
                                 aria-label={labels.openAria.replace("{title}", group.title[locale])}
-                                className="flex w-20 flex-col items-center gap-1 focus:outline-none"
+                                className="flex w-28 flex-col items-center gap-1 focus:outline-none"
                             >
                                 <span
                                     className={cn(
