@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { StoryLabels } from "@/i18n/dictionaries";
 import type { StoryGroup } from "@/interfaces/story";
@@ -12,6 +12,7 @@ import { prefetchAudio, prefetchImage } from "@/lib/stories/media-prefetch";
 import type { useStoryPlayer } from "./use-story-player";
 
 const HOLD_MS = 250; // press longer than this is a hold (pause), not a tap (navigate)
+const CONTROLS_HIDE_MS = 2500; // play/pause icon fades after this much inactivity
 
 type Player = ReturnType<typeof useStoryPlayer>;
 
@@ -36,6 +37,16 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
     // activation has no pointerdown, so holdRef stays false and navigates.
     const holdRef = useRef(false);
     const holdTimerRef = useRef<number | null>(null);
+    // The centered play/pause icon is a transient affordance: shown on any
+    // interaction, then faded after CONTROLS_HIDE_MS of inactivity.
+    const [controlsVisible, setControlsVisible] = useState(false);
+    const hideTimerRef = useRef<number | null>(null);
+
+    const pokeControls = useCallback(() => {
+        setControlsVisible(true);
+        if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = window.setTimeout(() => setControlsVisible(false), CONTROLS_HIDE_MS);
+    }, []);
 
     const onZonePointerDown = () => {
         holdRef.current = false;
@@ -43,6 +54,7 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
             holdRef.current = true;
         }, HOLD_MS);
         pause();
+        pokeControls();
     };
     const onZonePointerEnd = () => {
         if (holdTimerRef.current !== null) {
@@ -58,6 +70,25 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
         }
         navigate();
     };
+    const onCenterTap = () => {
+        if (state.paused) resume();
+        else pause();
+        pokeControls();
+    };
+
+    // Flash the icon when the viewer opens (affordance); clear the hide timer on
+    // close so it never fires against an unmounted component.
+    useEffect(() => {
+        if (state.open) {
+            pokeControls();
+        } else {
+            setControlsVisible(false);
+            if (hideTimerRef.current !== null) {
+                window.clearTimeout(hideTimerRef.current);
+                hideTimerRef.current = null;
+            }
+        }
+    }, [state.open, pokeControls]);
 
     // Keyboard: Esc closes, arrows navigate, Space pauses/resumes.
     useEffect(() => {
@@ -70,11 +101,12 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                 event.preventDefault();
                 if (state.paused) resume();
                 else pause();
+                pokeControls();
             }
         };
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
-    }, [state.open, state.paused, close, next, prev, pause, resume]);
+    }, [state.open, state.paused, close, next, prev, pause, resume, pokeControls]);
 
     // Lock body scroll while open.
     useEffect(() => {
@@ -319,6 +351,30 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                     aria-label={labels.nextAria}
                     className="absolute inset-y-0 right-0 z-0 w-1/3 cursor-default"
                 />
+                {/* Center zone: tap toggles pause/resume. */}
+                <button
+                    type="button"
+                    onClick={onCenterTap}
+                    aria-label={state.paused ? labels.playAria : labels.pauseAria}
+                    className="absolute inset-y-0 left-1/3 z-0 w-1/3 cursor-default"
+                />
+
+                {/* Centered play/pause icon. Visual only; fades on inactivity and
+                    never intercepts the center tap beneath it. */}
+                <div
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-300 ${
+                        controlsVisible ? "opacity-100" : "opacity-0"
+                    }`}
+                >
+                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/40 text-white">
+                        {state.paused ? (
+                            <PlayIcon className="h-8 w-8" />
+                        ) : (
+                            <PauseIcon className="h-8 w-8" />
+                        )}
+                    </span>
+                </div>
 
                 {/* Per-image music. Hidden; controlled imperatively via audioRef. */}
                 <audio ref={audioRef} preload="auto" />
@@ -363,6 +419,35 @@ function SoundOffIcon({ className }: { className?: string }) {
             <path d="M11 5 6 9H2v6h4l5 4V5Z" />
             <path d="m23 9-6 6" />
             <path d="m17 9 6 6" />
+        </svg>
+    );
+}
+
+function PlayIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden
+        >
+            <path d="M8 5v14l11-7z" />
+        </svg>
+    );
+}
+
+function PauseIcon({ className }: { className?: string }) {
+    return (
+        <svg
+            className={className}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden
+        >
+            <rect x="6" y="5" width="4" height="14" rx="1" />
+            <rect x="14" y="5" width="4" height="14" rx="1" />
         </svg>
     );
 }
