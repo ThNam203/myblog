@@ -71,9 +71,31 @@ export type Database = {
                 Update: Record<string, never>;
                 Relationships: [];
             };
+            post_views: {
+                Row: {
+                    post_slug: string;
+                    count: number;
+                    updated_at: string;
+                };
+                Insert: {
+                    post_slug: string;
+                    count?: number;
+                    updated_at?: string;
+                };
+                Update: {
+                    count?: number;
+                    updated_at?: string;
+                };
+                Relationships: [];
+            };
         };
         Views: Record<string, never>;
-        Functions: Record<string, never>;
+        Functions: {
+            increment_post_views: {
+                Args: { slug: string };
+                Returns: undefined;
+            };
+        };
         Enums: Record<string, never>;
         CompositeTypes: Record<string, never>;
     };

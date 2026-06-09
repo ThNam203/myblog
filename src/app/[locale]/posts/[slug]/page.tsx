@@ -8,6 +8,7 @@ import { PostBody } from "@/app/_components/post-body";
 import { PostHeader } from "@/app/_components/post-header";
 import { CommentSection } from "@/app/_components/comments/comment-section";
 import { PostReactions } from "@/app/_components/post-reactions";
+import { PostViewTracker } from "@/app/_components/post-view-tracker";
 import { ScrollProgress } from "@/app/_components/scroll-progress";
 import { RelatedPosts } from "@/app/_components/related-posts";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -40,6 +41,7 @@ export default async function Post(props: Params) {
 
     return (
         <main>
+            <PostViewTracker postSlug={params.slug} />
             <ScrollProgress />
             <Container>
                 <article className="mb-32 min-w-0">

@@ -96,3 +96,31 @@ create policy "reactions are viewable by everyone"
 -- Inserts/deletes are performed only with the secret key in server actions
 
 create index post_reactions_post_slug_idx on public.post_reactions(post_slug);
+
+-- Per-post view counts: one counter row per slug, bumped atomically via RPC.
+-- Per-session dedup happens client-side (sessionStorage), so this stays a lean
+-- counter rather than one row per view.
+create table public.post_views (
+  post_slug  text        primary key,
+  count      bigint      not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.post_views enable row level security;
+
+create policy "post views are viewable by everyone"
+  on public.post_views for select using (true);
+
+-- Counts are bumped only through increment_post_views() (security definer);
+-- there is no public insert/update policy.
+create or replace function public.increment_post_views(slug text)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into public.post_views (post_slug, count, updated_at)
+  values (slug, 1, now())
+  on conflict (post_slug)
+  do update set count = public.post_views.count + 1, updated_at = now();
+$$;
