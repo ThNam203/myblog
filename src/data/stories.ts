@@ -32,7 +32,7 @@ export const stories: StoryGroup[] = [
             {
                 id: "nf-1",
                 type: "image",
-                src: "/assets/stories/20260609/night_fury.jpg",
+                src: "/assets/stories/20260609/night_fury.webp",
                 music: { src: "/music/nhung_dieu_nho_nhoi.mp3", startTime: 30 },
                 caption: {
                     vi: "Rồng trắng thành rồng đen :))",
