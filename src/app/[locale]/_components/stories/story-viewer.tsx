@@ -52,9 +52,11 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
         holdRef.current = false;
         holdTimerRef.current = window.setTimeout(() => {
             holdRef.current = true;
+            // Only a hold is a deliberate pause → show the icon then. A quick
+            // tap navigates (next/prev) and must not flash the affordance.
+            pokeControls();
         }, HOLD_MS);
         pause();
-        pokeControls();
     };
     const onZonePointerEnd = () => {
         if (holdTimerRef.current !== null) {

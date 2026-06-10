@@ -24,6 +24,9 @@ type Props = {
     labels: StoryLabels;
 };
 
+// Items shown before the "show all" toggle appears.
+const COLLAPSED_LIMIT = 10;
+
 export function StoryBar({ stories, locale, labels }: Props) {
     // All stories in one row, newest first. Deterministic sort → same order on
     // server and client (the time-based muting below is gated to after mount).
@@ -38,6 +41,12 @@ export function StoryBar({ stories, locale, labels }: Props) {
     // mismatch); after mount, stories past their active window mute in place.
     const [now, setNow] = useState<number | null>(null);
     useEffect(() => setNow(Date.now()), []);
+
+    const [showAll, setShowAll] = useState(false);
+    const hasOverflow = ordered.length > COLLAPSED_LIMIT;
+    // Slice from 0 keeps each item's index aligned with `ordered`, so the index
+    // passed to player.open() and StoryViewer stays correct.
+    const visible = showAll ? ordered : ordered.slice(0, COLLAPSED_LIMIT);
     const expiredIds = useMemo(() => {
         if (now === null) return new Set<string>();
         return new Set(
@@ -52,8 +61,8 @@ export function StoryBar({ stories, locale, labels }: Props) {
             <h2 className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight">
                 {labels.regionLabel}
             </h2>
-            <ul className="flex gap-4 overflow-x-auto pb-1">
-                {ordered.map((group, index) => {
+            <ul className="flex flex-wrap gap-4 pb-1">
+                {visible.map((group, index) => {
                     const muted = expiredIds.has(group.id);
                     return (
                         <li key={group.id} className="shrink-0">
@@ -63,7 +72,7 @@ export function StoryBar({ stories, locale, labels }: Props) {
                                 onPointerEnter={() => warmGroup(group)}
                                 onFocus={() => warmGroup(group)}
                                 aria-label={labels.openAria.replace("{title}", group.title[locale])}
-                                className="flex w-28 flex-col items-center gap-1 focus:outline-none"
+                                className="flex w-24 flex-col items-center gap-1 focus:outline-none"
                             >
                                 <span
                                     className={cn(
@@ -92,6 +101,17 @@ export function StoryBar({ stories, locale, labels }: Props) {
                     );
                 })}
             </ul>
+
+            {hasOverflow && (
+                <button
+                    type="button"
+                    onClick={() => setShowAll((v) => !v)}
+                    aria-expanded={showAll}
+                    className="mt-4 text-sm font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300 focus:outline-none"
+                >
+                    {showAll ? labels.showLess : labels.showAll}
+                </button>
+            )}
 
             <StoryViewer groups={ordered} locale={locale} labels={labels} player={player} />
         </section>

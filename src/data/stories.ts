@@ -24,6 +24,24 @@ import type { StoryGroup } from "@/interfaces/story";
  */
 export const stories: StoryGroup[] = [
     {
+        id: "lau-chay",
+        title: { vi: "Lẩu chay", en: "Vegetarian hotpot" },
+        cover: "/assets/stories/20260610/lau_chay.webp",
+        createdAt: "2026-06-10T07:25:00.000Z",
+        items: [
+            {
+                id: "lc-1",
+                type: "image",
+                src: "/assets/stories/20260610/lau_chay.webp",
+                music: { src: "/music/yeu_em_thi_gat_dau.mp3", startTime: 30 },
+                caption: { 
+                    vi: "Lẩu chay với em Khôi sau khi đi dự lễ tốt nghiệp của fen Đạt", 
+                    en: "Vegetarian hotpot with Khôi after attending Đạt's graduation ceremony" 
+                },
+            },
+        ],
+    },
+    {
         id: "night-fury",
         title: { vi: "Light Fury? No, Night Fury!", en: "Light Fury? No, Night Fury!" },
         cover: "/assets/stories/20260609/night_fury.webp",
