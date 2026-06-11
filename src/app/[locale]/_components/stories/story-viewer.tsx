@@ -10,6 +10,8 @@ import { upcomingItems } from "@/lib/stories/story-player";
 import { getMusicTrackBySrc } from "@/lib/music-tracks";
 import { prefetchAudio, prefetchImage } from "@/lib/stories/media-prefetch";
 import type { useStoryPlayer } from "./use-story-player";
+import DateFormatter from "@/app/_components/date-formatter";
+import { MusicGlyph } from "@/app/_components/site-music-player/glyphs";
 
 const HOLD_MS = 250; // press longer than this is a hold (pause), not a tap (navigate)
 const CONTROLS_HIDE_MS = 2500; // play/pause icon fades after this much inactivity
@@ -217,15 +219,24 @@ export function StoryViewer({ groups, locale, labels, player }: Props) {
                         progress={state.progress}
                     />
                     <div className="flex justify-between text-white">
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-1">
                             <p className="text-sm font-semibold drop-shadow">
                                 {currentGroup.title[locale]}
                             </p>
+                            <p className="text-xs text-white/70 drop-shadow">
+                                <DateFormatter
+                                    dateString={currentGroup.createdAt}
+                                    locale={locale}
+                                />
+                            </p>
                             {musicTrack && (
-                                <>
-                                    <p className="text-xs text-white/80 font-semibold">{musicTrack.title}</p>
-                                    <p className="text-xs text-white/70">{musicTrack.artist}</p>
-                                </>
+                                <div className="flex gap-1">
+                                    <MusicGlyph className="h-4 w-4 text-white/80" />
+                                    <div>
+                                        <p className="text-xs text-white/80 font-semibold">{musicTrack.title}</p>
+                                        <p className="text-[0.6rem] text-white/70">{musicTrack.artist}</p>
+                                    </div>
+                                </div>
                             )}
                         </div>
                         <div className="flex gap-3">
