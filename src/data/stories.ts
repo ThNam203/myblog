@@ -24,6 +24,24 @@ import type { StoryGroup } from "@/interfaces/story";
  */
 export const stories: StoryGroup[] = [
     {
+        id: "body",
+        title: { vi: "Gym?~ Gym!", en: "Gym?~ Gym!" },
+        cover: "/assets/stories/20260611/body.webp",
+        createdAt: "2026-06-11T11:07:23.836Z",
+        items: [
+            {
+                id: "body-1",
+                type: "image",
+                src: "/assets/stories/20260611/body.webp",
+                music: { src: "/music/nang_am_trong_tim.mp3", startTime: 20 },
+                caption: {
+                    vi: "Còn hơi xấu, nhưng ổn",
+                    en: "Still a bit ugly, but okay",
+                },
+            },
+        ],
+    },
+    {
         id: "lau-chay",
         title: { vi: "Lẩu chay", en: "Vegetarian hotpot" },
         cover: "/assets/stories/20260610/lau_chay.webp",
