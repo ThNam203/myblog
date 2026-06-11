@@ -23,6 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: "weekly",
             priority: 0.6,
         });
+        entries.push({
+            url: `${SITE_URL}/${locale}/about`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.6,
+        });
 
         for (const post of getAllPosts(locale)) {
             entries.push({

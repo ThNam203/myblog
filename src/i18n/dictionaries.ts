@@ -100,6 +100,14 @@ export type Dictionary = {
         confessionsSubmitting: string;
         confessionsSuccess: string;
         confessionsEmpty: string;
+        aboutPageMetaTitle: string;
+        aboutPageDescription: string;
+        aboutHobbiesHeading: string;
+        aboutFlexHeading: string;
+        aboutFlexDescription: string;
+        aboutEducationHeading: string;
+        aboutLinksHeading: string;
+        aboutPortfolioCta: string;
         reactionsLabel: string;
         searchOpenAria: string;
         searchDialogTitle: string;
@@ -323,6 +331,15 @@ const dictionaries: Record<Locale, Dictionary> = {
             confessionsSubmitting: "Đang gửi…",
             confessionsSuccess: "Đã gửi confession.",
             confessionsEmpty: "Chưa có confession nào. Hãy là người đầu tiên!",
+            aboutPageMetaTitle: "Về mình",
+            aboutPageDescription:
+                "Về Huỳnh Thành Nam — kỹ sư phần mềm fullstack tại Thành phố Hồ Chí Minh.",
+            aboutHobbiesHeading: "Sở thích",
+            aboutFlexHeading: "Flex xàm",
+            aboutFlexDescription: "Thành tựu để ăn mày quá khứ.",
+            aboutEducationHeading: "Học vấn",
+            aboutLinksHeading: "Liên kết",
+            aboutPortfolioCta: "Xem portfolio đầy đủ",
             reactionsLabel: "Cảm nhận của bạn về bài viết này?",
             searchOpenAria: "Mở tìm kiếm bài viết",
             searchDialogTitle: "Tìm kiếm bài viết",
@@ -473,6 +490,15 @@ const dictionaries: Record<Locale, Dictionary> = {
             confessionsSubmitting: "Sending…",
             confessionsSuccess: "Confession posted.",
             confessionsEmpty: "No confessions yet. Be the first!",
+            aboutPageMetaTitle: "About me",
+            aboutPageDescription:
+                "About Huỳnh Thành Nam — a fullstack software engineer based in Ho Chi Minh City.",
+            aboutHobbiesHeading: "Hobbies",
+            aboutFlexHeading: "Silly flex",
+            aboutFlexDescription: "Past achievements I keep milking.",
+            aboutEducationHeading: "Education",
+            aboutLinksHeading: "Links",
+            aboutPortfolioCta: "View full portfolio",
             reactionsLabel: "How did this post make you feel?",
             searchOpenAria: "Open post search",
             searchDialogTitle: "Search posts",
