@@ -44,6 +44,7 @@ const AUTHOR_HOBBIES: Record<Locale, string[]> = {
 
 const AUTHOR_FLEXES: Record<Locale, string[]> = {
     vi: [
+        "Đã đọc Giết con chim nhại (Harper Lee), Không gia đình (Hector Malot), Don Quixote (Miguel de Cervantes), Hai vạn dặm dưới đáy biển (Jules Verne), Ông già và biển cả (Ernest Hemingway), và Đi tìm lẽ sống (Viktor Frankl)",
         "TOEIC 940 (Reading & Listening)",
         "Giải 3 Tin học cấp huyện lớp 8",
         "Giải 3 Vật lý cấp huyện lớp 9",
@@ -52,6 +53,7 @@ const AUTHOR_FLEXES: Record<Locale, string[]> = {
         "26.95 điểm khối A01 THPT Quốc Gia 2021",
     ],
     en: [
+        "Have read To Kill a Mockingbird (Harper Lee), Sans Famille (Hector Malot), Don Quixote (Miguel de Cervantes), Twenty Thousand Leagues Under the Seas (Jules Verne), The Old Man and the Sea (Ernest Hemingway), and Man's Search for Meaning (Viktor Frankl).",
         "TOEIC 940 (Reading & Listening)",
         "3rd place in Computer Science competition at the district level in class 8",
         "3rd place in Physics competition at the district level in class 9",
