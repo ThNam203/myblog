@@ -1,3 +1,5 @@
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
 export type Database = {
     public: {
         Tables: {
@@ -85,6 +87,33 @@ export type Database = {
                 Update: {
                     count?: number;
                     updated_at?: string;
+                };
+                Relationships: [];
+            };
+            story_groups: {
+                Row: {
+                    id: string;
+                    title: Json;
+                    cover: string;
+                    items: Json;
+                    created_at: string;
+                    active_for_ms: number | null;
+                };
+                Insert: {
+                    id: string;
+                    title: Json;
+                    cover: string;
+                    items: Json;
+                    created_at?: string;
+                    active_for_ms?: number | null;
+                };
+                Update: {
+                    id?: string;
+                    title?: Json;
+                    cover?: string;
+                    items?: Json;
+                    created_at?: string;
+                    active_for_ms?: number | null;
                 };
                 Relationships: [];
             };

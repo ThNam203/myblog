@@ -6,7 +6,7 @@ import { getAllPosts } from "@/lib/api";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isValidLocale, locales } from "@/i18n/config";
 import { StoryBar } from "@/app/[locale]/_components/stories/story-bar";
-import { stories } from "@/data/stories";
+import { fetchStories } from "@/lib/stories/fetch-stories";
 import {
     LETSLIVE_URL,
     WEB_DEFAULT_AUTHOR,
@@ -77,6 +77,7 @@ export default async function Index({ params }: Props) {
 
     const dictionary = getDictionary(locale);
     const allPosts = getAllPosts(locale);
+    const stories = await fetchStories();
 
     const heroPost = allPosts[0];
     const morePosts = allPosts.slice(1);

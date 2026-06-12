@@ -1,4 +1,4 @@
-import { assertStoriesValid } from "@/lib/stories/story-sections";
+import { assertStoriesValid } from "../lib/stories/story-sections";
 import type { StoryGroup } from "@/interfaces/story";
 
 /**

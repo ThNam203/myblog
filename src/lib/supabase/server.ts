@@ -35,9 +35,14 @@ export async function createClient() {
 }
 
 export function createAdminClient() {
-    return createSupabaseClient<Database>(
-        requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-        requireEnv("SUPABASE_SECRET_KEY"),
-        { auth: { autoRefreshToken: false, persistSession: false } },
-    );
+    // SUPABASE_SERVICE_ROLE_KEY is the pre-rename name of the secret key.
+    const secretKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!secretKey) {
+        throw new Error(
+            "Missing required environment variable: SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY)",
+        );
+    }
+    return createSupabaseClient<Database>(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), secretKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+    });
 }

@@ -124,3 +124,27 @@ as $$
   on conflict (post_slug)
   do update set count = public.post_views.count + 1, updated_at = now();
 $$;
+
+-- Story groups: owner-authored stories (one row per group, items as jsonb in
+-- the same shape as the StoryGroup TS type). Writes happen only through
+-- owner-checked server actions using the secret key, so there are no write
+-- policies here.
+create table public.story_groups (
+  id            text        primary key,
+  title         jsonb       not null,
+  cover         text        not null,
+  items         jsonb       not null,
+  created_at    timestamptz not null default now(),
+  active_for_ms bigint
+);
+
+alter table public.story_groups enable row level security;
+
+create policy "story groups are viewable by everyone"
+  on public.story_groups for select using (true);
+
+-- Storage bucket for story media (public read; uploads via signed upload URLs
+-- created server-side with the secret key, which bypasses storage RLS).
+insert into storage.buckets (id, name, public)
+values ('stories', 'stories', true)
+on conflict (id) do nothing;

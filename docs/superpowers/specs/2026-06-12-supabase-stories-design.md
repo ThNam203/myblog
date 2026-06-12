@@ -21,7 +21,7 @@ can be uploaded anytime, server-rendered from the database.
   `unstable_cache` tagged `"stories"`; admin mutations call
   `revalidateTag("stories")` so new stories appear instantly without redeploy.
 - **Owner = email match**: server actions and the admin page compare the session
-  email to the `OWNER_EMAIL` env var. DB has no write policies — writes go only
+  email to the `ADMIN_EMAIL` env var (already used for comment admin). DB has no write policies — writes go only
   through the service-role client after that check.
 - **Form scope v1**: image items (client-side webp compression) AND video items
   (mp4 + poster), edit + delete of existing groups, optional address/post link
@@ -63,7 +63,7 @@ client-side as today.
 
 ### Admin page `/[locale]/admin/stories`
 
-Server component gate: no session or email ≠ `OWNER_EMAIL` → `notFound()`.
+Server component gate: no session or email ≠ `ADMIN_EMAIL` → `notFound()`.
 Lists existing groups with edit/delete; create/edit form (client component):
 
 - Group: title vi/en, createdAt (default now), cover defaults to first image
@@ -92,5 +92,5 @@ via jiti, bracket-free path, `@/` only as `import type` — existing constraints
 
 ## Env
 
-- `OWNER_EMAIL` — new; admin gate + server-action owner check.
+- `ADMIN_EMAIL` — reused (already present); admin gate + server-action owner check.
 - `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SECRET_KEY` — already present.
