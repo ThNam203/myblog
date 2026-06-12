@@ -18,7 +18,7 @@ export type AuthorInfo = {
     location: string;
     picture: string;
     hobbies: string[];
-    flexes: string[];
+    moreInformation: string[];
     education: AuthorEducation[];
     socials: AuthorSocialLink[];
     portfolioUrl: string;
@@ -42,8 +42,18 @@ const AUTHOR_HOBBIES: Record<Locale, string[]> = {
     ],
 };
 
-const AUTHOR_FLEXES: Record<Locale, string[]> = {
+const AUTHOR_MORE_INFORMATION: Record<Locale, string[]> = {
     vi: [
+        "IT đần, lương dưới 1K đô",
+        "Cận đụt lùn trĩ",
+        "Vozer mới nổi",
+        "Threads City nằm vùng",
+        "Reddit basement dweller",
+        "23 năm không một lần nắm tay bạn gái nào",
+        "Không tiền không tình",
+        "Gần Đà Lạt nhưng chưa bao giờ lên",
+        "Năm 22 lần đầu thấy biển",
+        "Được cái yêu đời, yêu gia đình, yêu bạn bè, yêu bản thân",
         "Đã đọc Giết con chim nhại (Harper Lee), Không gia đình (Hector Malot), Don Quixote (Miguel de Cervantes), Hai vạn dặm dưới đáy biển (Jules Verne), Ông già và biển cả (Ernest Hemingway), và Đi tìm lẽ sống (Viktor Frankl)",
         "TOEIC 940 (Reading & Listening)",
         "Giải 3 Tin học cấp huyện lớp 8",
@@ -53,6 +63,16 @@ const AUTHOR_FLEXES: Record<Locale, string[]> = {
         "26.95 điểm khối A01 THPT Quốc Gia 2021",
     ],
     en: [
+        "Clueless IT guy, salary under $1K",
+        "Four-eyed, nerdy, short, with hemorrhoids",
+        "Up-and-coming Vozer",
+        "Threads City lurker",
+        "Reddit basement dweller",
+        "23 years without ever holding a girl's hand",
+        "No money, no romance",
+        "Lives near Da Lat but never actually been there",
+        "Saw the ocean for the first time at 22",
+        "But hey, I love life, family, friends, and myself",
         "Have read To Kill a Mockingbird (Harper Lee), Sans Famille (Hector Malot), Don Quixote (Miguel de Cervantes), Twenty Thousand Leagues Under the Seas (Jules Verne), The Old Man and the Sea (Ernest Hemingway), and Man's Search for Meaning (Viktor Frankl).",
         "TOEIC 940 (Reading & Listening)",
         "3rd place in Computer Science competition at the district level in class 8",
@@ -94,7 +114,7 @@ const author: Record<Locale, AuthorInfo> = {
         location: "Thành phố Hồ Chí Minh, Việt Nam",
         picture: AUTHOR_PICTURE,
         hobbies: AUTHOR_HOBBIES.vi,
-        flexes: AUTHOR_FLEXES.vi,
+        moreInformation: AUTHOR_MORE_INFORMATION.vi,
         education: AUTHOR_EDUCATION.vi,
         socials: AUTHOR_SOCIALS,
         portfolioUrl: AUTHOR_PORTFOLIO_URL,
@@ -106,7 +126,7 @@ const author: Record<Locale, AuthorInfo> = {
         location: "Ho Chi Minh City, Vietnam",
         picture: AUTHOR_PICTURE,
         hobbies: AUTHOR_HOBBIES.en,
-        flexes: AUTHOR_FLEXES.en,
+        moreInformation: AUTHOR_MORE_INFORMATION.en,
         education: AUTHOR_EDUCATION.en,
         socials: AUTHOR_SOCIALS,
         portfolioUrl: AUTHOR_PORTFOLIO_URL,

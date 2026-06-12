@@ -107,14 +107,14 @@ export default async function AboutPage({ params }: Props) {
 
                 <section className="mb-10">
                     <h2 className="mb-1 text-lg font-semibold tracking-tight text-black dark:text-white">
-                        {dictionary.ui.aboutFlexHeading}
+                        {dictionary.ui.aboutMoreInformationHeading}
                     </h2>
                     <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-400">
-                        {dictionary.ui.aboutFlexDescription}
+                        {dictionary.ui.aboutMoreInformationDescription}
                     </p>
                     <ul className="list-disc space-y-1 pl-5 text-black dark:text-neutral-100">
-                        {author.flexes.map((flex) => (
-                            <li key={flex}>{flex}</li>
+                        {author.moreInformation.map((item) => (
+                            <li key={item}>{item}</li>
                         ))}
                     </ul>
                 </section>
