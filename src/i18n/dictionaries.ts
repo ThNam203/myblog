@@ -68,6 +68,7 @@ export type Dictionary = {
         headerMenuSignUp: string;
         headerMenuSignOut: string;
         headerMenuProfile: string;
+        headerMenuAdmin: string;
         authTabLogin: string;
         authTabRegister: string;
         authCloseAria: string;
@@ -131,6 +132,9 @@ export type Dictionary = {
         newsletterSuccess: string;
         newsletterErrorGeneric: string;
         newsletterErrorInvalidEmail: string;
+        notFoundHeading: string;
+        notFoundDescription: string;
+        notFoundCta: string;
     };
     story: {
         regionLabel: string;
@@ -297,6 +301,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             headerMenuSignUp: "Đăng ký",
             headerMenuSignOut: "Đăng xuất",
             headerMenuProfile: "Hồ sơ",
+            headerMenuAdmin: "Quản trị",
             authTabLogin: "Đăng nhập",
             authTabRegister: "Đăng ký",
             authCloseAria: "Đóng",
@@ -363,6 +368,10 @@ const dictionaries: Record<Locale, Dictionary> = {
             newsletterSuccess: "Đăng ký thành công!",
             newsletterErrorGeneric: "Không thể đăng ký. Vui lòng thử lại.",
             newsletterErrorInvalidEmail: "Email không hợp lệ.",
+            notFoundHeading: "Trang không tìm thấy",
+            notFoundDescription:
+                "Trang bạn đang tìm có thể đã bị xóa hoặc không tồn tại.",
+            notFoundCta: "Về trang chủ",
         },
         story: {
             regionLabel: "Stories",
@@ -457,6 +466,7 @@ const dictionaries: Record<Locale, Dictionary> = {
             headerMenuSignUp: "Sign up",
             headerMenuSignOut: "Sign out",
             headerMenuProfile: "Profile",
+            headerMenuAdmin: "Admin",
             authTabLogin: "Login",
             authTabRegister: "Register",
             authCloseAria: "Close",
@@ -522,6 +532,10 @@ const dictionaries: Record<Locale, Dictionary> = {
             newsletterSuccess: "Subscribed!",
             newsletterErrorGeneric: "Could not subscribe. Please try again.",
             newsletterErrorInvalidEmail: "Invalid email.",
+            notFoundHeading: "Page not found",
+            notFoundDescription:
+                "The page you're looking for may have been removed or doesn't exist.",
+            notFoundCta: "Back to home",
         },
         story: {
             regionLabel: "Stories",

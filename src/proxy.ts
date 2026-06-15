@@ -45,7 +45,11 @@ export async function proxy(request: NextRequest) {
         return res;
     }
 
-    let response = NextResponse.next({ request });
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
+    const patchedRequest = { request: { headers: requestHeaders } };
+
+    let response = NextResponse.next(patchedRequest);
     if (hasLocale) {
         response.cookies.set("NEXT_LOCALE", firstSegment);
     } else if (pathname.startsWith("/auth/callback")) {
@@ -67,7 +71,7 @@ export async function proxy(request: NextRequest) {
             },
             setAll(cookiesToSet) {
                 cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-                response = NextResponse.next({ request });
+                response = NextResponse.next(patchedRequest);
                 if (hasLocale) {
                     response.cookies.set("NEXT_LOCALE", firstSegment);
                 }

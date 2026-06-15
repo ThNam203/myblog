@@ -66,7 +66,9 @@ type Props = {
         signUp: string;
         signOut: string;
         profile: string;
+        admin: string;
     };
+    adminEmail: string;
     authModal: AuthModalLabels;
     searchDialog: SearchDialogLabels;
 };
@@ -78,6 +80,7 @@ export function HeaderSiteMenu({
     languageSectionLabel,
     themeLabels,
     labels,
+    adminEmail,
     authModal,
     searchDialog,
 }: Props) {
@@ -86,9 +89,14 @@ export function HeaderSiteMenu({
     const [menuOpen, setMenuOpen] = useState(false);
     const [authSession, setAuthSession] = useState<{ tab: AuthModalTab; id: number } | null>(null);
     const [searchOpen, setSearchOpen] = useState(false);
-    const [auth, setAuth] = useState<{ isAuthenticated: boolean; avatarUrl: string | null }>({
+    const [auth, setAuth] = useState<{
+        isAuthenticated: boolean;
+        avatarUrl: string | null;
+        email: string | null;
+    }>({
         isAuthenticated: false,
         avatarUrl: null,
+        email: null,
     });
     const rootRef = useRef<HTMLDivElement>(null);
     const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
@@ -108,14 +116,22 @@ export function HeaderSiteMenu({
 
         supabase.auth.getUser().then(({ data: { user } }) => {
             if (!active) return;
-            setAuth({ isAuthenticated: !!user, avatarUrl: deriveAvatar(user?.user_metadata) });
+            setAuth({
+                isAuthenticated: !!user,
+                avatarUrl: deriveAvatar(user?.user_metadata),
+                email: user?.email ?? null,
+            });
         });
 
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
             const user = session?.user ?? null;
-            setAuth({ isAuthenticated: !!user, avatarUrl: deriveAvatar(user?.user_metadata) });
+            setAuth({
+                isAuthenticated: !!user,
+                avatarUrl: deriveAvatar(user?.user_metadata),
+                email: user?.email ?? null,
+            });
         });
 
         return () => {
@@ -298,6 +314,16 @@ export function HeaderSiteMenu({
                             >
                                 {labels.profile}
                             </Link>
+                            {adminEmail && auth.email === adminEmail && (
+                                <Link
+                                    href={`/${locale}/admin/stories`}
+                                    className={menuItemClass}
+                                    role="menuitem"
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    {labels.admin}
+                                </Link>
+                            )}
                             <button
                                 type="button"
                                 role="menuitem"

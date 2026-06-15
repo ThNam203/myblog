@@ -155,7 +155,9 @@ export default async function LocaleLayout({ children, params }: Props) {
                                 signUp: dictionary.ui.headerMenuSignUp,
                                 signOut: dictionary.ui.headerMenuSignOut,
                                 profile: dictionary.ui.headerMenuProfile,
+                                admin: dictionary.ui.headerMenuAdmin,
                             }}
+                            adminEmail={process.env.ADMIN_EMAIL ?? ""}
                             authModal={getAuthModalLabels(dictionary)}
                             searchDialog={getSearchDialogLabels(dictionary)}
                         />
