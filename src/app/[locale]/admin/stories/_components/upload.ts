@@ -4,7 +4,7 @@ import { createUploadUrl } from "@/lib/actions/stories";
 const MAX_WIDTH = 1600;
 const WEBP_QUALITY = 0.78;
 
-/** Mirrors scripts/compress-images.ts (max width 1600, webp q78) in the browser. */
+/** Mirrors scripts/compress-raw-assets.ts (max width 1600, webp q78) in the browser. */
 export async function compressImageToWebp(file: File): Promise<Blob> {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, MAX_WIDTH / bitmap.width);

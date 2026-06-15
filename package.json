@@ -7,8 +7,7 @@
         "start": "next start",
         "test": "node --import jiti/register --test \"src/lib/**/*.test.ts\"",
         "new-post": "jiti scripts/new-post.ts",
-        "compress-images": "jiti scripts/compress-images.ts",
-        "migrate-stories": "node --env-file=.env.local --import jiti/register scripts/migrate-stories.ts"
+        "compress-raw-assets": "jiti scripts/compress-raw-assets.ts"
     },
     "dependencies": {
         "@supabase/ssr": "^0.10.2",
