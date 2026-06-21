@@ -50,6 +50,11 @@ export const MUSIC_TRACKS: MusicTrack[] = [
         title: "Giữa đại lộ đông tây",
         artist: "Uyên Linh",
     },
+    {
+        src: "/music/kho_ve_nu_cuoi.mp3",
+        title: "Khó vẽ nụ cười",
+        artist: "Đạt G, Du Uyên",
+    },
 ];
 
 export function getMusicTrackBySrc(src: string): MusicTrack | undefined {
