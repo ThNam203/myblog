@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Container from "@/app/_components/container";
@@ -30,6 +31,16 @@ export default async function AboutPage({ params }: Props) {
     const author = getAuthorInfo(locale as Locale);
 
     return (
+        <>
+        <div className="relative h-48 w-full overflow-hidden md:h-64">
+            <Image
+                src="/assets/avatar/my_bg.jpg"
+                alt="Profile background"
+                fill
+                className="object-cover"
+                priority
+            />
+        </div>
         <Container>
             <div className="mx-auto max-w-2xl py-8 px-4 md:px-0">
                 <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -155,5 +166,6 @@ export default async function AboutPage({ params }: Props) {
                 </a>
             </div>
         </Container>
+        </>
     );
 }
