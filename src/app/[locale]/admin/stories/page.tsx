@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Container from "@/app/_components/container";
 import { isValidLocale } from "@/i18n/config";
-import { createAdminClient, createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { parseStoryRows } from "@/lib/stories/story-schema";
 import { AdminStories } from "./_components/admin-stories";
 
@@ -19,18 +18,7 @@ export default async function AdminStoriesPage({ params }: Props) {
     const { locale } = await params;
     if (!isValidLocale(locale)) notFound();
 
-    const ownerEmail = process.env.ADMIN_EMAIL;
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!ownerEmail || !user?.email || user.email.toLowerCase() !== ownerEmail.toLowerCase()) {
-        notFound();
-    }
-
-    // Read uncached so the admin always sees current data (the homepage uses
-    // the tagged cache instead).
+    // Auth handled by admin layout. Read uncached so admin always sees current data.
     const admin = createAdminClient();
     const { data, error } = await admin
         .from("story_groups")
@@ -42,10 +30,8 @@ export default async function AdminStoriesPage({ params }: Props) {
 
     return (
         <main>
-            <Container>
-                <h1 className="my-8 text-3xl font-bold tracking-tight">Stories admin</h1>
-                <AdminStories groups={groups} />
-            </Container>
+            <h1 className="mb-6 text-3xl font-bold tracking-tight">Stories</h1>
+            <AdminStories groups={groups} />
         </main>
     );
 }
