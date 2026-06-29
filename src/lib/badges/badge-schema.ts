@@ -18,7 +18,7 @@ const badgeDefinitionRowSchema = z.object({
     description: localizedSchema,
     icon: z.string().nullable(),
     condition_key: conditionKeySchema,
-    threshold: z.number().int().positive(),
+    threshold: z.number().int().min(0),
 });
 
 const userBadgeRowSchema = z.object({
