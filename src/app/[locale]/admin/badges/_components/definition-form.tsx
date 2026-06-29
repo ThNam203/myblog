@@ -18,7 +18,7 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
     const [labelVi, setLabelVi] = useState(initial?.label?.vi ?? "");
     const [descEn, setDescEn] = useState(initial?.description.en ?? "");
     const [descVi, setDescVi] = useState(initial?.description.vi ?? "");
-    const [conditionKey, setConditionKey] = useState<"posts_read" | "posts_read_all" | "comments_posted">(
+    const [conditionKey, setConditionKey] = useState<"posts_read" | "posts_read_all" | "comments_posted" | "manual">(
         initial?.conditionKey ?? "posts_read",
     );
     const [threshold, setThreshold] = useState(String(initial?.threshold ?? ""));
@@ -47,7 +47,7 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
                 description: { en: descEn.trim(), vi: descVi.trim() },
                 icon: iconVal,
                 conditionKey,
-                threshold: conditionKey === "posts_read_all" ? 0 : parseInt(threshold, 10),
+                threshold: conditionKey === "posts_read_all" || conditionKey === "manual" ? 0 : parseInt(threshold, 10),
             };
             const result = isEdit
                 ? await updateDefinition(initial.id, data)
@@ -144,9 +144,10 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
                         <option value="posts_read">posts_read</option>
                         <option value="posts_read_all">posts_read_all (read every post)</option>
                         <option value="comments_posted">comments_posted</option>
+                        <option value="manual">manual (admin grant only)</option>
                     </select>
                 </label>
-                {conditionKey !== "posts_read_all" && (
+                {conditionKey !== "posts_read_all" && conditionKey !== "manual" && (
                     <label className="flex flex-col gap-1 text-sm">
                         Threshold
                         <input

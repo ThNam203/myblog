@@ -91,7 +91,7 @@ export type DefinitionInput = {
     label: { en: string; vi: string } | null;
     description: { en: string; vi: string };
     icon: string | null;
-    conditionKey: "posts_read" | "posts_read_all" | "comments_posted";
+    conditionKey: "posts_read" | "posts_read_all" | "comments_posted" | "manual";
     threshold: number;
 };
 
