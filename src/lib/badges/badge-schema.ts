@@ -3,7 +3,7 @@ import type { BadgeSeries, BadgeDefinition, UserBadgeRow } from "./types";
 
 const localizedSchema = z.object({ en: z.string(), vi: z.string() });
 
-export const conditionKeySchema = z.enum(["posts_read", "comments_posted"]);
+export const conditionKeySchema = z.enum(["posts_read", "posts_read_all", "comments_posted"]);
 
 const badgeSeriesRowSchema = z.object({
     id: z.string().min(1),

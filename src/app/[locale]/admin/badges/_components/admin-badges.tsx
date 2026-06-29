@@ -161,12 +161,12 @@ export function AdminBadges({ series, definitions, earnedCounts }: Props) {
                                         className="flex items-center gap-3 rounded border border-neutral-300 p-2 dark:border-neutral-700"
                                     >
                                         {def.icon && (
-                                            <span className="text-xl">{def.icon}</span>
+                                            <img src={def.icon} alt="" className="h-8 w-8 object-contain" />
                                         )}
                                         <div className="min-w-0 flex-1">
-                                            {(def.label || def.icon) && (
+                                            {def.label && (
                                                 <p className="text-sm font-medium">
-                                                    {def.label?.en ?? def.icon}
+                                                    {def.label.en}
                                                 </p>
                                             )}
                                             <p className="text-xs text-neutral-500">

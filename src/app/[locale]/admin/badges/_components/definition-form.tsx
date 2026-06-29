@@ -18,7 +18,7 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
     const [labelVi, setLabelVi] = useState(initial?.label?.vi ?? "");
     const [descEn, setDescEn] = useState(initial?.description.en ?? "");
     const [descVi, setDescVi] = useState(initial?.description.vi ?? "");
-    const [conditionKey, setConditionKey] = useState<"posts_read" | "comments_posted">(
+    const [conditionKey, setConditionKey] = useState<"posts_read" | "posts_read_all" | "comments_posted">(
         initial?.conditionKey ?? "posts_read",
     );
     const [threshold, setThreshold] = useState(String(initial?.threshold ?? ""));
@@ -47,7 +47,7 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
                 description: { en: descEn.trim(), vi: descVi.trim() },
                 icon: iconVal,
                 conditionKey,
-                threshold: parseInt(threshold, 10),
+                threshold: conditionKey === "posts_read_all" ? 0 : parseInt(threshold, 10),
             };
             const result = isEdit
                 ? await updateDefinition(initial.id, data)
@@ -77,11 +77,11 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
                     />
                 </label>
                 <label className="flex flex-col gap-1 text-sm">
-                    Icon (emoji, optional)
+                    Icon path (optional)
                     <input
                         value={icon}
                         onChange={(e) => setIcon(e.target.value)}
-                        placeholder="🐛"
+                        placeholder="/badges/bookworm.png"
                         className={inputClass}
                     />
                 </label>
@@ -142,20 +142,23 @@ export function DefinitionForm({ seriesId, initial, onDone }: Props) {
                         className={inputClass}
                     >
                         <option value="posts_read">posts_read</option>
+                        <option value="posts_read_all">posts_read_all (read every post)</option>
                         <option value="comments_posted">comments_posted</option>
                     </select>
                 </label>
-                <label className="flex flex-col gap-1 text-sm">
-                    Threshold
-                    <input
-                        required
-                        type="number"
-                        min={1}
-                        value={threshold}
-                        onChange={(e) => setThreshold(e.target.value)}
-                        className={inputClass}
-                    />
-                </label>
+                {conditionKey !== "posts_read_all" && (
+                    <label className="flex flex-col gap-1 text-sm">
+                        Threshold
+                        <input
+                            required
+                            type="number"
+                            min={1}
+                            value={threshold}
+                            onChange={(e) => setThreshold(e.target.value)}
+                            className={inputClass}
+                        />
+                    </label>
+                )}
             </div>
 
             {error && <p className="text-sm text-red-500">{error}</p>}

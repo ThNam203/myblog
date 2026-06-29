@@ -52,6 +52,11 @@ test("parseBadgeDefinitionRow throws on invalid condition_key", () => {
     assert.throws(() => parseBadgeDefinitionRow({ ...VALID_DEF_ROW, condition_key: "unknown" }));
 });
 
+test("parseBadgeDefinitionRow accepts posts_read_all condition_key", () => {
+    const result = parseBadgeDefinitionRow({ ...VALID_DEF_ROW, condition_key: "posts_read_all" });
+    assert.equal(result.conditionKey, "posts_read_all");
+});
+
 test("parseUserBadgeRow parses valid row", () => {
     const result = parseUserBadgeRow(VALID_USER_BADGE_ROW);
     assert.equal(result.id, VALID_USER_BADGE_ROW.id);

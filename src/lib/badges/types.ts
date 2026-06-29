@@ -10,7 +10,7 @@ export type BadgeDefinition = {
     label: { en: string; vi: string } | null;
     description: { en: string; vi: string };
     icon: string | null;
-    conditionKey: "posts_read" | "comments_posted";
+    conditionKey: "posts_read" | "posts_read_all" | "comments_posted";
     threshold: number;
 };
 

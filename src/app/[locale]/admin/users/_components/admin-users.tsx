@@ -117,7 +117,7 @@ export function AdminUsers({ users, allSeries, allDefinitions }: Props) {
                                                 className="flex items-center gap-2 text-sm"
                                             >
                                                 {b.definition.icon && (
-                                                    <span>{b.definition.icon}</span>
+                                                    <img src={b.definition.icon} alt="" className="h-5 w-5 object-contain" />
                                                 )}
                                                 {b.definition.label && (
                                                     <span>{b.definition.label.en}</span>
