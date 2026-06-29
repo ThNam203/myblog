@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Comment } from "@/lib/supabase/types";
 import { addComment, deleteComment } from "@/lib/actions/comments";
 import { CommentItem } from "./comment-item";
+import type { ShowcasedBadge } from "./comment-item";
 import { CommentForm } from "./comment-form";
 import { AuthModal } from "./auth-modal";
 import type { AuthModalLabels } from "@/i18n/dictionaries";
@@ -33,6 +34,7 @@ type Props = {
     commentsDeleteCommentAria: string;
     commentsDeleteReplyAria: string;
     onMutated?: () => void | Promise<void>;
+    showcaseMap?: Map<string, ShowcasedBadge[]>;
 };
 
 type OptimisticAction = { type: "add"; comment: Comment } | { type: "delete"; id: string };
@@ -73,6 +75,7 @@ export function CommentList(props: Props) {
         commentsDeleteCommentAria,
         commentsDeleteReplyAria,
         onMutated,
+        showcaseMap,
     } = props;
 
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -191,6 +194,7 @@ export function CommentList(props: Props) {
                             deleteReplyAria={commentsDeleteReplyAria}
                             onReply={(body) => handleAdd(body, comment.id)}
                             onDelete={(id) => handleDelete(id)}
+                            showcasedBadges={comment.user_id ? (showcaseMap?.get(comment.user_id) ?? []) : []}
                         />
                     ))}
                 </div>

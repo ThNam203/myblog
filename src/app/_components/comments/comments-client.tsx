@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getComments } from "@/lib/actions/comments";
 import { Comment } from "@/lib/supabase/types";
 import { CommentList } from "./comment-list";
+import type { ShowcasedBadge } from "./comment-item";
 
 /**
  * Client island that loads the dynamic comment data (current user, profile,
@@ -30,6 +31,7 @@ export function CommentsClient(props: Props) {
     const [comments, setComments] = useState<Comment[]>([]);
     const [user, setUser] = useState<CurrentUser>(SIGNED_OUT);
     const [loading, setLoading] = useState(true);
+    const [showcaseMap, setShowcaseMap] = useState<Map<string, ShowcasedBadge[]>>(new Map());
 
     const refetchComments = useCallback(async () => {
         setComments(await getComments(postSlug));
@@ -65,6 +67,29 @@ export function CommentsClient(props: Props) {
             setUser(resolvedUser);
             setComments(fetchedComments);
             setLoading(false);
+
+            // Fetch showcased badges for all commenters
+            const userIds = [...new Set(fetchedComments.map((c) => c.user_id).filter(Boolean))];
+            if (userIds.length > 0) {
+                const { data } = await supabase
+                    .from("user_badge_showcase")
+                    .select("user_id, badge_definitions(icon, label)")
+                    .in("user_id", userIds);
+                if (active && data) {
+                    const map = new Map<string, ShowcasedBadge[]>();
+                    for (const row of data) {
+                        const uid = row.user_id;
+                        const def = (row.badge_definitions as unknown) as { icon: string | null; label: unknown } | null;
+                        if (!def) continue;
+                        const label = def.label as { en: string; vi: string } | null;
+                        const badge: ShowcasedBadge = { icon: def.icon, label };
+                        const existing = map.get(uid) ?? [];
+                        existing.push(badge);
+                        map.set(uid, existing);
+                    }
+                    setShowcaseMap(map);
+                }
+            }
         })();
 
         const {
@@ -98,6 +123,7 @@ export function CommentsClient(props: Props) {
             currentUserEmail={user.email}
             currentUserDisplayName={user.displayName}
             onMutated={refetchComments}
+            showcaseMap={showcaseMap}
         />
     );
 }

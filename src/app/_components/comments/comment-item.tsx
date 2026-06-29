@@ -5,6 +5,11 @@ import { Comment } from "@/lib/supabase/types";
 import { CommentForm } from "./comment-form";
 import { CommentBody } from "./comment-body";
 
+export type ShowcasedBadge = {
+    icon: string | null;
+    label: { en: string; vi: string } | null;
+};
+
 type Props = {
     comment: Comment;
     replies: Comment[];
@@ -22,6 +27,7 @@ type Props = {
     deleteReplyAria: string;
     onReply: (body: string) => Promise<void> | void;
     onDelete: (id: string) => Promise<void> | void;
+    showcasedBadges?: ShowcasedBadge[];
 };
 
 const markdownClass =
@@ -44,6 +50,7 @@ export function CommentItem({
     deleteReplyAria,
     onReply,
     onDelete,
+    showcasedBadges,
 }: Props) {
     const [showReplyForm, setShowReplyForm] = useState(false);
 
@@ -68,6 +75,21 @@ export function CommentItem({
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-300 text-sm font-semibold text-neutral-700 dark:bg-neutral-600 dark:text-neutral-200">
                             {initial}
                         </div>
+                        {showcasedBadges && showcasedBadges.length > 0 && (
+                            <div className="flex items-center gap-1">
+                                {showcasedBadges.map((badge, i) =>
+                                    badge.icon ? (
+                                        <img
+                                            key={i}
+                                            src={badge.icon}
+                                            alt={badge.label?.en ?? ""}
+                                            title={badge.label?.en ?? ""}
+                                            className="h-5 w-5 object-contain"
+                                        />
+                                    ) : null,
+                                )}
+                            </div>
+                        )}
                         <span className="text-sm font-semibold">{displayName}</span>
                         <span className="text-xs text-neutral-400">{formattedDate}</span>
                     </div>
