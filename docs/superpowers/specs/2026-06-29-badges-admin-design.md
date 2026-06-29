@@ -8,7 +8,7 @@ status: approved
 
 ## Overview
 
-Introduce a badge/achievement system for logged-in users. Badges are grouped into series (e.g., "reading"), each with multiple tiers (e.g., "beginner", "godlike"). Badges are earned automatically when a user meets a numeric threshold (e.g., 5 posts read). Admins can also grant/revoke badges manually.
+Introduce a badge/achievement system for logged-in users. Badges are grouped into series (e.g., "reading") — series are purely organizational containers. Each series holds multiple badge definitions ordered by `order`. Badges are earned automatically when a user meets a numeric threshold (e.g., 5 posts read). Admins can also grant/revoke badges manually.
 
 Alongside the badge system, the admin area is restructured with a shared sidebar layout replacing per-page auth checks.
 
@@ -39,8 +39,8 @@ Alongside the badge system, the admin area is restructured with a shared sidebar
 ```sql
 create table public.badge_series (
   id     text  primary key,   -- human slug, e.g. "reading"
-  label  jsonb not null,      -- {"en": "Reading", "vi": "Đọc sách"}
-  icon   text  not null       -- emoji or icon name
+  label  jsonb not null       -- {"en": "Reading", "vi": "Đọc sách"}
+  -- no icon: series is a pure organizational container
 );
 alter table public.badge_series enable row level security;
 create policy "badge_series viewable by everyone"
@@ -52,19 +52,20 @@ create policy "badge_series viewable by everyone"
 create table public.badge_definitions (
   id             uuid primary key default gen_random_uuid(),
   series_id      text not null references public.badge_series(id) on delete cascade,
-  tier           text not null,   -- "beginner", "intermediate", "godlike"
-  tier_order     int  not null,   -- 1, 2, 3 for display sort
-  label          jsonb not null,  -- {"en": "Bookworm", "vi": "Mọt sách"}
-  description    jsonb not null,  -- {"en": "Read 5 posts", "vi": "Đọc 5 bài"}
-  icon           text not null,
-  condition_key  text not null,   -- "posts_read" | "comments_posted"
-  threshold      int  not null,
-  unique(series_id, tier)
+  "order"        int  not null,          -- display sort within series
+  label          jsonb,                  -- nullable: {"en": "Bookworm", "vi": "Mọt sách"}
+  description    jsonb not null,         -- {"en": "Read 5 posts", "vi": "Đọc 5 bài"}
+  icon           text,                   -- nullable: emoji or icon name
+  condition_key  text not null,          -- "posts_read" | "comments_posted"
+  threshold      int  not null
+  -- no tier/tier_order: use "order" only
 );
 alter table public.badge_definitions enable row level security;
 create policy "badge_definitions viewable by everyone"
   on public.badge_definitions for select using (true);
 ```
+
+> **Render rule:** if both `label` and `icon` are null, render nothing for that field. Admin ensures at least one is present.
 
 ### `user_badges`
 ```sql
@@ -132,8 +133,8 @@ All four tables added to `Database["public"]["Tables"]` with Row/Insert/Update s
 
 ### `src/app/[locale]/admin/users/_components/admin-users.tsx`
 - Table rows: avatar initials, email, display_name, joined date, badge count
-- Click row → inline expansion showing earned badges (icon + tier + series + grant date)
-- Grant badge: select series → select tier (filtered to unearned) → "Grant" button → server action
+- Click row → inline expansion showing earned badges (icon if present + label if present + series + grant date; skip render if both null)
+- Grant badge: select series → select definition (filtered to unearned, shown by order + label/icon) → "Grant" button → server action
 - Revoke badge: trash icon next to earned badge → confirm dialog → server action
 
 ---
@@ -142,22 +143,23 @@ All four tables added to `Database["public"]["Tables"]` with Row/Insert/Update s
 
 ### `src/app/[locale]/admin/badges/page.tsx`
 - Fetches all `badge_series` ordered by id
-- Fetches all `badge_definitions` ordered by series_id, tier_order
+- Fetches all `badge_definitions` ordered by series_id, `order`
 - Fetches count of `user_badges` per definition_id (to block delete if earned)
 - Passes all to client component
 
 ### `src/app/[locale]/admin/badges/_components/admin-badges.tsx`
 - Two-panel layout: series list (left) + definitions for selected series (right)
-- Series panel: list items with icon + label + edit/delete. "New Series" button at top.
+- Series panel: list items with label + edit/delete. "New Series" button at top.
 - Definition panel: table of tiers for selected series. "New Definition" button.
 - Delete blocked if any user has earned that badge (show count in tooltip).
 
 ### `src/app/[locale]/admin/badges/_components/series-form.tsx`
-- Fields: id (slug, text, immutable on edit), icon (emoji input), label.en, label.vi
+- Fields: id (slug, text, immutable on edit), label.en, label.vi
 - Create → `createSeries` action. Edit → `updateSeries` action.
 
 ### `src/app/[locale]/admin/badges/_components/definition-form.tsx`
-- Fields: tier (text), tier_order (number), icon, label.en, label.vi, description.en, description.vi, condition_key (select: posts_read | comments_posted), threshold (number)
+- Fields: order (number), icon (nullable, emoji text input), label.en (nullable), label.vi (nullable), description.en, description.vi, condition_key (select: posts_read | comments_posted), threshold (number)
+- Validation: at least one of icon or label must be non-empty (client + server)
 - Create → `createDefinition`. Edit → `updateDefinition`.
 
 ---
@@ -169,7 +171,7 @@ All actions use `createAdminClient()`. All are admin-only — callers are server
 | Action | Input | Behavior |
 |---|---|---|
 | `createSeries` | BadgeSeries fields | Insert into `badge_series` |
-| `updateSeries` | id + updatable fields (label, icon) | Update `badge_series` |
+| `updateSeries` | id + updatable fields (label) | Update `badge_series` |
 | `deleteSeries` | id | Delete if no definitions reference it (cascade handles definitions, but block if users earned any child badge) |
 | `createDefinition` | BadgeDefinition fields | Insert into `badge_definitions` |
 | `updateDefinition` | id + fields | Update `badge_definitions` |
@@ -187,19 +189,19 @@ Return type: `{ error?: string }` — consistent with existing action pattern in
 export type BadgeSeries = {
   id: string;
   label: { en: string; vi: string };
-  icon: string;
+  // no icon
 };
 
 export type BadgeDefinition = {
   id: string;
   seriesId: string;
-  tier: string;
-  tierOrder: number;
-  label: { en: string; vi: string };
+  order: number;
+  label: { en: string; vi: string } | null;   // nullable
   description: { en: string; vi: string };
-  icon: string;
+  icon: string | null;                         // nullable
   conditionKey: "posts_read" | "comments_posted";
   threshold: number;
+  // no tier/tierOrder
 };
 
 export type UserBadge = {
