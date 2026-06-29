@@ -193,6 +193,22 @@ export type Database = {
                 Update: Record<string, never>;
                 Relationships: [];
             };
+            user_badge_showcase: {
+                Row: {
+                    user_id: string;
+                    series_id: string;
+                    badge_definition_id: string;
+                };
+                Insert: {
+                    user_id: string;
+                    series_id: string;
+                    badge_definition_id: string;
+                };
+                Update: {
+                    badge_definition_id?: string;
+                };
+                Relationships: [];
+            };
         };
         Views: Record<string, never>;
         Functions: {

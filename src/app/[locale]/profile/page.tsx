@@ -4,7 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { ProfileEditForm } from "@/app/_components/profile-edit-form";
 import { getDictionary } from "@/i18n/dictionaries";
 import { isValidLocale, type Locale } from "@/i18n/config";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { parseBadgeSeriesRow, parseBadgeDefinitionRow } from "@/lib/badges/badge-schema";
+import { BadgeShowcaseSelector } from "./_components/badge-showcase-selector";
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -45,6 +47,40 @@ export default async function ProfilePage({ params }: Props) {
     const initialDisplayName =
         profile?.display_name ?? meta?.display_name ?? (user.email ? user.email.split("@")[0] : "");
 
+    // Fetch badge data for showcase selector
+    const admin = createAdminClient();
+    const [
+        { data: userBadgeRows },
+        { data: defRows },
+        { data: seriesRows },
+        { data: showcaseRows },
+    ] = await Promise.all([
+        admin.from("user_badges").select("badge_definition_id").eq("user_id", user.id),
+        admin.from("badge_definitions").select("*").order("order"),
+        admin.from("badge_series").select("*").order("id"),
+        supabase.from("user_badge_showcase").select("series_id, badge_definition_id").eq("user_id", user.id),
+    ]);
+
+    const allSeries = (seriesRows ?? []).map(parseBadgeSeriesRow);
+    const allDefinitions = (defRows ?? []).map(parseBadgeDefinitionRow);
+    const earnedDefIds = new Set((userBadgeRows ?? []).map((r) => r.badge_definition_id));
+    const showcaseMap = new Map(
+        (showcaseRows ?? []).map((r) => [r.series_id, r.badge_definition_id]),
+    );
+
+    const badgeGroups = allSeries
+        .map((series) => {
+            const earned = allDefinitions
+                .filter((d) => d.seriesId === series.id && earnedDefIds.has(d.id))
+                .map((d) => ({ definitionId: d.id, definition: d }));
+            return {
+                series,
+                earned,
+                showcasedDefinitionId: showcaseMap.get(series.id) ?? null,
+            };
+        })
+        .filter((g) => g.earned.length > 0);
+
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -72,6 +108,14 @@ export default async function ProfilePage({ params }: Props) {
                     saved: dictionary.ui.profileSaved,
                 }}
             />
+
+            <div className="mt-10">
+                <h2 className="mb-4 text-xl font-semibold tracking-tight">Badges</h2>
+                <p className="mb-4 text-sm text-neutral-500">
+                    Choose one badge per series to display on your profile.
+                </p>
+                <BadgeShowcaseSelector groups={badgeGroups} />
+            </div>
         </div>
     );
 }

@@ -166,6 +166,37 @@ export async function deleteDefinition(id: string): Promise<{ error?: string }> 
     return {};
 }
 
+// ── Showcase (user-controlled) ────────────────────────────────────────────────
+
+/** Set or clear the showcased badge for a series. Pass null badgeDefinitionId to remove. */
+export async function setShowcaseBadge(
+    seriesId: string,
+    badgeDefinitionId: string | null,
+): Promise<{ error?: string }> {
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { error: "Not authenticated" };
+
+    if (badgeDefinitionId === null) {
+        const { error } = await supabase
+            .from("user_badge_showcase")
+            .delete()
+            .eq("user_id", user.id)
+            .eq("series_id", seriesId);
+        if (error) return { error: error.message };
+        return {};
+    }
+
+    const { error } = await supabase.from("user_badge_showcase").upsert(
+        { user_id: user.id, series_id: seriesId, badge_definition_id: badgeDefinitionId },
+        { onConflict: "user_id,series_id" },
+    );
+    if (error) return { error: error.message };
+    return {};
+}
+
 // ── Grant / Revoke ────────────────────────────────────────────────────────────
 
 export async function grantBadge(

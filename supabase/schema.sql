@@ -196,3 +196,16 @@ alter table public.user_post_reads enable row level security;
 create policy "users can view own reads"
   on public.user_post_reads for select using (auth.uid() = user_id);
 create index user_post_reads_user_id_idx on public.user_post_reads(user_id);
+
+-- Badge showcase: one selected badge per series per user, displayed on profile
+create table public.user_badge_showcase (
+  user_id             uuid not null references auth.users(id) on delete cascade,
+  series_id           text not null references public.badge_series(id) on delete cascade,
+  badge_definition_id uuid not null references public.badge_definitions(id) on delete cascade,
+  primary key (user_id, series_id)
+);
+alter table public.user_badge_showcase enable row level security;
+create policy "badge showcase viewable by everyone"
+  on public.user_badge_showcase for select using (true);
+create policy "users can manage own showcase"
+  on public.user_badge_showcase for all using (auth.uid() = user_id);
