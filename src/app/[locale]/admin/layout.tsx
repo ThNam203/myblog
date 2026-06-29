@@ -13,18 +13,20 @@ export default async function AdminLayout({ children, params }: Props) {
     const { locale } = await params;
     if (!isValidLocale(locale)) notFound();
 
-    const ownerEmail = process.env.ADMIN_EMAIL;
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    if (process.env.NODE_ENV !== "development") {
+        const ownerEmail = process.env.ADMIN_EMAIL;
+        const supabase = await createClient();
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
 
-    if (
-        !ownerEmail ||
-        !user?.email ||
-        user.email.toLowerCase() !== ownerEmail.toLowerCase()
-    ) {
-        notFound();
+        if (
+            !ownerEmail ||
+            !user?.email ||
+            user.email.toLowerCase() !== ownerEmail.toLowerCase()
+        ) {
+            notFound();
+        }
     }
 
     const navItems = [

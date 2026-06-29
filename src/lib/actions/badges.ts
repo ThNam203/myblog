@@ -3,6 +3,8 @@
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 async function requireOwner(): Promise<{ error?: string }> {
+    if (process.env.NODE_ENV === "development") return {};
+
     const ownerEmail = process.env.ADMIN_EMAIL;
     if (!ownerEmail) return { error: "ADMIN_EMAIL is not configured" };
 
