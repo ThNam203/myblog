@@ -117,6 +117,82 @@ export type Database = {
                 };
                 Relationships: [];
             };
+            badge_series: {
+                Row: {
+                    id: string;
+                    label: Json;
+                };
+                Insert: {
+                    id: string;
+                    label: Json;
+                };
+                Update: {
+                    label?: Json;
+                };
+                Relationships: [];
+            };
+            badge_definitions: {
+                Row: {
+                    id: string;
+                    series_id: string;
+                    order: number;
+                    label: Json | null;
+                    description: Json;
+                    icon: string | null;
+                    condition_key: string;
+                    threshold: number;
+                };
+                Insert: {
+                    id?: string;
+                    series_id: string;
+                    order: number;
+                    label?: Json | null;
+                    description: Json;
+                    icon?: string | null;
+                    condition_key: string;
+                    threshold: number;
+                };
+                Update: {
+                    series_id?: string;
+                    order?: number;
+                    label?: Json | null;
+                    description?: Json;
+                    icon?: string | null;
+                    condition_key?: string;
+                    threshold?: number;
+                };
+                Relationships: [];
+            };
+            user_badges: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    badge_definition_id: string;
+                    granted_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    badge_definition_id: string;
+                    granted_at?: string;
+                };
+                Update: Record<string, never>;
+                Relationships: [];
+            };
+            user_post_reads: {
+                Row: {
+                    user_id: string;
+                    post_slug: string;
+                    read_at: string;
+                };
+                Insert: {
+                    user_id: string;
+                    post_slug: string;
+                    read_at?: string;
+                };
+                Update: Record<string, never>;
+                Relationships: [];
+            };
         };
         Views: Record<string, never>;
         Functions: {

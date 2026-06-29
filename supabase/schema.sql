@@ -148,3 +148,51 @@ create policy "story groups are viewable by everyone"
 insert into storage.buckets (id, name, public)
 values ('stories', 'stories', true)
 on conflict (id) do nothing;
+
+-- Badge series: organizational containers for related badges (e.g. "reading")
+create table public.badge_series (
+  id     text  primary key,  -- human slug, e.g. "reading"
+  label  jsonb not null      -- {"en": "Reading", "vi": "Đọc sách"}
+);
+alter table public.badge_series enable row level security;
+create policy "badge_series viewable by everyone"
+  on public.badge_series for select using (true);
+
+-- Badge definitions: individual badges within a series, sorted by "order"
+create table public.badge_definitions (
+  id             uuid primary key default gen_random_uuid(),
+  series_id      text not null references public.badge_series(id) on delete cascade,
+  "order"        int  not null,
+  label          jsonb,           -- nullable: {"en": "Bookworm", "vi": "Mọt sách"}
+  description    jsonb not null,  -- {"en": "Read 5 posts", "vi": "Đọc 5 bài"}
+  icon           text,            -- nullable emoji or icon name
+  condition_key  text not null,   -- "posts_read" | "comments_posted"
+  threshold      int  not null
+);
+alter table public.badge_definitions enable row level security;
+create policy "badge_definitions viewable by everyone"
+  on public.badge_definitions for select using (true);
+
+-- User earned badges; writes happen only via admin client (service role)
+create table public.user_badges (
+  id                  uuid primary key default gen_random_uuid(),
+  user_id             uuid not null references auth.users(id) on delete cascade,
+  badge_definition_id uuid not null references public.badge_definitions(id) on delete cascade,
+  granted_at          timestamptz not null default now(),
+  unique(user_id, badge_definition_id)
+);
+alter table public.user_badges enable row level security;
+create policy "users can view own badges"
+  on public.user_badges for select using (auth.uid() = user_id);
+
+-- Per-user post read tracking (scroll-to-end); schema only — client integration is follow-on
+create table public.user_post_reads (
+  user_id   uuid not null references auth.users(id) on delete cascade,
+  post_slug text not null,
+  read_at   timestamptz not null default now(),
+  primary key (user_id, post_slug)
+);
+alter table public.user_post_reads enable row level security;
+create policy "users can view own reads"
+  on public.user_post_reads for select using (auth.uid() = user_id);
+create index user_post_reads_user_id_idx on public.user_post_reads(user_id);
