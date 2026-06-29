@@ -70,16 +70,16 @@ export default async function ProfilePage({ params }: Props) {
 
     const badgeGroups = allSeries
         .map((series) => {
-            const earned = allDefinitions
-                .filter((d) => d.seriesId === series.id && earnedDefIds.has(d.id))
-                .map((d) => ({ definitionId: d.id, definition: d }));
+            const badges = allDefinitions
+                .filter((d) => d.seriesId === series.id)
+                .map((d) => ({ definitionId: d.id, definition: d, earned: earnedDefIds.has(d.id) }));
             return {
                 series,
-                earned,
+                badges,
                 showcasedDefinitionId: showcaseMap.get(series.id) ?? null,
             };
         })
-        .filter((g) => g.earned.length > 0);
+        .filter((g) => g.badges.length > 0);
 
     return (
         <div className="container mx-auto px-4 py-12">
