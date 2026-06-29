@@ -73,16 +73,17 @@ export function CommentsClient(props: Props) {
             if (userIds.length > 0) {
                 const { data } = await supabase
                     .from("user_badge_showcase")
-                    .select("user_id, badge_definitions(icon, label)")
+                    .select("user_id, badge_definitions(icon, label, description)")
                     .in("user_id", userIds);
                 if (active && data) {
                     const map = new Map<string, ShowcasedBadge[]>();
                     for (const row of data) {
                         const uid = row.user_id;
-                        const def = (row.badge_definitions as unknown) as { icon: string | null; label: unknown } | null;
+                        const def = (row.badge_definitions as unknown) as { icon: string | null; label: unknown; description: unknown } | null;
                         if (!def) continue;
                         const label = def.label as { en: string; vi: string } | null;
-                        const badge: ShowcasedBadge = { icon: def.icon, label };
+                        const description = def.description as { en: string; vi: string };
+                        const badge: ShowcasedBadge = { icon: def.icon, label, description };
                         const existing = map.get(uid) ?? [];
                         existing.push(badge);
                         map.set(uid, existing);
