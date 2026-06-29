@@ -114,7 +114,7 @@ export default async function ProfilePage({ params }: Props) {
                 <p className="mb-4 text-sm text-neutral-500">
                     Choose one badge per series to display on your profile.
                 </p>
-                <BadgeShowcaseSelector groups={badgeGroups} />
+                <BadgeShowcaseSelector groups={badgeGroups} locale={locale} />
             </div>
         </div>
     );
