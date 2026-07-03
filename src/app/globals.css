@@ -21,60 +21,66 @@
     --tone-accent: 23 23 23;
 }
 
-/* Blue: cool blue-tinted grays, indigo-blue accent (#2563eb) */
+/* Blue: saturated blue surfaces and deep navy text, indigo-blue accent (#2563eb) */
 [data-theme="blue"] {
-    --tone-white: 250 252 255;
-    --tone-50: 244 247 252;
-    --tone-100: 235 240 248;
-    --tone-200: 217 226 238;
-    --tone-300: 198 210 227;
-    --tone-400: 148 163 187;
-    --tone-500: 100 116 144;
-    --tone-600: 71 85 110;
-    --tone-700: 53 65 88;
-    --tone-800: 32 41 59;
-    --tone-900: 19 26 41;
-    --tone-950: 9 13 23;
+    --tone-white: 240 246 255;
+    --tone-50: 232 240 254;
+    --tone-100: 219 231 252;
+    --tone-200: 191 212 248;
+    --tone-300: 155 186 240;
+    --tone-400: 106 143 214;
+    --tone-500: 63 103 180;
+    --tone-600: 41 78 150;
+    --tone-700: 30 60 120;
+    --tone-800: 21 42 87;
+    --tone-900: 14 29 62;
+    --tone-950: 7 16 38;
     --tone-accent: 37 99 235;
 }
 
-/* Magenta: mauve-tinted grays, fuchsia accent (#c026d3) */
+/* Magenta: saturated orchid surfaces and deep plum text, fuchsia accent (#c026d3) */
 [data-theme="magenta"] {
-    --tone-white: 254 250 254;
-    --tone-50: 250 244 250;
-    --tone-100: 246 236 246;
-    --tone-200: 235 219 234;
-    --tone-300: 222 199 220;
-    --tone-400: 180 150 176;
-    --tone-500: 136 105 132;
-    --tone-600: 100 73 96;
-    --tone-700: 77 55 74;
-    --tone-800: 49 33 47;
-    --tone-900: 32 20 30;
-    --tone-950: 16 8 15;
+    --tone-white: 253 240 252;
+    --tone-50: 251 232 250;
+    --tone-100: 248 219 246;
+    --tone-200: 240 191 236;
+    --tone-300: 228 155 222;
+    --tone-400: 199 106 190;
+    --tone-500: 163 63 152;
+    --tone-600: 130 41 120;
+    --tone-700: 103 30 95;
+    --tone-800: 74 21 68;
+    --tone-900: 52 14 48;
+    --tone-950: 31 7 29;
     --tone-accent: 192 38 211;
 }
 
-/* Pink: warm rose-tinted grays, soft rose accent (#e0527f) */
+/* Pink: saturated blush surfaces and deep wine text, rose accent (#e0527f) */
 [data-theme="pink"] {
-    --tone-white: 255 250 251;
-    --tone-50: 252 245 247;
-    --tone-100: 249 238 241;
-    --tone-200: 241 221 227;
-    --tone-300: 231 200 209;
-    --tone-400: 193 152 164;
-    --tone-500: 148 106 119;
-    --tone-600: 110 74 86;
-    --tone-700: 85 56 66;
-    --tone-800: 54 34 41;
-    --tone-900: 35 21 26;
-    --tone-950: 18 9 12;
+    --tone-white: 255 240 245;
+    --tone-50: 254 231 238;
+    --tone-100: 253 218 229;
+    --tone-200: 249 190 208;
+    --tone-300: 243 152 180;
+    --tone-400: 219 104 141;
+    --tone-500: 184 62 103;
+    --tone-600: 148 40 78;
+    --tone-700: 117 29 60;
+    --tone-800: 84 20 43;
+    --tone-900: 58 13 30;
+    --tone-950: 35 6 17;
     --tone-accent: 224 82 127;
+}
+
+/* Color themes: default (unclassed) text — headings, body copy — carries the
+   theme's deep tone instead of browser black */
+[data-theme] body {
+    color: rgb(var(--tone-950));
 }
 
 /* Accent-tinted text selection under color themes */
 [data-theme] ::selection {
-    background-color: rgb(var(--tone-accent) / 0.22);
+    background-color: rgb(var(--tone-accent) / 0.28);
 }
 
 /* Bottom music player scrubber */

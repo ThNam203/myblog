@@ -45,7 +45,7 @@ Only `neutral` and `white` are remapped. `slate-*` (used almost exclusively in `
 [data-theme="pink"]   { /* warm rose-tinted grays, accent ≈ #e0527f */ }
 ```
 
-Palette construction rule ("neutral, catchy just enough"): take the stock neutral lightness ladder and shift hue/chroma slightly toward the theme hue — low saturation at the light end (50–200, surfaces), slightly more at the mid/dark end (500–950, text) so text stays readable but carries the hue. Accent reserved for links, active states, focus rings, selection.
+Palette construction rule (revised per user feedback — themes are full "main colors", not subtle tints): keep the stock neutral lightness ladder but saturate it strongly toward the theme hue — pastel but clearly colored surfaces at the light end (50–200), deep saturated theme tones at the dark end (700–950) used for headings/body text. Default (unclassed) text under a color theme is `rgb(var(--tone-950))` via a `[data-theme] body` rule, so headings carry the theme's deep tone instead of browser black. Accent reserved for links, active states, focus rings, selection.
 
 Additionally `::selection` gets the accent at low alpha under `[data-theme]` blocks, and the music-player scrubber variables (`--music-played` / `--music-unplayed`) are re-pointed at tone variables so the player tints with the theme.
 
