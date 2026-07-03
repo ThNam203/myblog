@@ -6,17 +6,38 @@ declare global {
     var updateDOM: () => void;
 }
 
-export type ColorSchemePreference = "system" | "dark" | "light";
+export type ColorSchemePreference = "system" | "dark" | "light" | "blue" | "magenta" | "pink";
 
 const STORAGE_KEY = "nam-blog-theme";
 
-export const THEME_MENU_OPTIONS: ColorSchemePreference[] = ["dark", "light", "system"];
+export const THEME_MENU_OPTIONS: ColorSchemePreference[] = [
+    "dark",
+    "light",
+    "blue",
+    "magenta",
+    "pink",
+    "system",
+];
 type ThemeLabelMap = Record<ColorSchemePreference, string>;
 const defaultModeLabels: ThemeLabelMap = {
     dark: "Dark",
     light: "Light",
+    blue: "Blue",
+    magenta: "Magenta",
+    pink: "Pink",
     system: "System",
 };
+
+function isColorSchemePreference(value: string | null): value is ColorSchemePreference {
+    return (
+        value === "system" ||
+        value === "dark" ||
+        value === "light" ||
+        value === "blue" ||
+        value === "magenta" ||
+        value === "pink"
+    );
+}
 
 /** to reuse updateDOM function defined inside injected script */
 
@@ -24,6 +45,7 @@ const defaultModeLabels: ThemeLabelMap = {
 export const NoFOUCScript = (storageKey: string) => {
     /* can not use outside constants or function as this script will be injected in a different context */
     const [SYSTEM, DARK, LIGHT] = ["system", "dark", "light"];
+    const COLOR_THEMES = ["blue", "magenta", "pink"];
 
     /** Modify transition globally to avoid patched transitions */
     const modifyTransition = () => {
@@ -47,10 +69,12 @@ export const NoFOUCScript = (storageKey: string) => {
         const mode = localStorage.getItem(storageKey) ?? SYSTEM;
         const systemMode = media.matches ? DARK : LIGHT;
         const resolvedMode = mode === SYSTEM ? systemMode : mode;
-        const classList = document.documentElement.classList;
-        if (resolvedMode === DARK) classList.add(DARK);
-        else classList.remove(DARK);
-        document.documentElement.setAttribute("data-mode", mode);
+        const root = document.documentElement;
+        if (resolvedMode === DARK) root.classList.add(DARK);
+        else root.classList.remove(DARK);
+        if (COLOR_THEMES.indexOf(mode) !== -1) root.setAttribute("data-theme", mode);
+        else root.removeAttribute("data-theme");
+        root.setAttribute("data-mode", mode);
         restoreTransitions();
     };
     window.updateDOM();
@@ -72,7 +96,7 @@ export function useColorSchemePreference(): ColorSchemePreferenceState {
     useEffect(() => {
         updateDOM = window.updateDOM;
         const storedMode = localStorage.getItem(STORAGE_KEY);
-        if (storedMode === "dark" || storedMode === "light" || storedMode === "system") {
+        if (isColorSchemePreference(storedMode)) {
             setMode(storedMode);
         }
         setIsMounted(true);
@@ -82,7 +106,7 @@ export function useColorSchemePreference(): ColorSchemePreferenceState {
                 return;
             }
 
-            if (e.newValue === "dark" || e.newValue === "light" || e.newValue === "system") {
+            if (isColorSchemePreference(e.newValue)) {
                 setMode(e.newValue);
                 return;
             }

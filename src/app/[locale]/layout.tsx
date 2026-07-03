@@ -146,6 +146,9 @@ export default async function LocaleLayout({ children, params }: Props) {
                             themeLabels={{
                                 dark: dictionary.ui.themeDark,
                                 light: dictionary.ui.themeLight,
+                                blue: dictionary.ui.themeBlue,
+                                magenta: dictionary.ui.themeMagenta,
+                                pink: dictionary.ui.themePink,
                                 system: dictionary.ui.themeSystem,
                             }}
                             labels={{

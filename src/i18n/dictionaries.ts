@@ -35,6 +35,9 @@ export type Dictionary = {
         themeSystem: string;
         themeDark: string;
         themeLight: string;
+        themeBlue: string;
+        themeMagenta: string;
+        themePink: string;
         musicPlay: string;
         musicPause: string;
         musicExpand: string;
@@ -268,6 +271,9 @@ const dictionaries: Record<Locale, Dictionary> = {
             themeSystem: "Hệ thống",
             themeDark: "Tối",
             themeLight: "Sáng",
+            themeBlue: "Xanh dương",
+            themeMagenta: "Hồng cánh sen",
+            themePink: "Hồng phấn",
             musicPlay: "Phát",
             musicPause: "Tạm dừng",
             musicExpand: "Mở rộng trình phát nhạc",
@@ -433,6 +439,9 @@ const dictionaries: Record<Locale, Dictionary> = {
             themeSystem: "System",
             themeDark: "Dark",
             themeLight: "Light",
+            themeBlue: "Blue",
+            themeMagenta: "Magenta",
+            themePink: "Pink",
             musicPlay: "Play",
             musicPause: "Pause",
             musicExpand: "Expand music player",
