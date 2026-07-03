@@ -2,11 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme tone variables. Defaults = stock Tailwind neutral + pure white, so the
+   Light and Dark themes render pixel-identical to the pre-theming site.
+   Values are space-separated RGB triplets consumed via rgb(var(--x) / alpha). */
+:root {
+    --tone-white: 255 255 255;
+    --tone-50: 250 250 250;
+    --tone-100: 245 245 245;
+    --tone-200: 229 229 229;
+    --tone-300: 212 212 212;
+    --tone-400: 163 163 163;
+    --tone-500: 115 115 115;
+    --tone-600: 82 82 82;
+    --tone-700: 64 64 64;
+    --tone-800: 38 38 38;
+    --tone-900: 23 23 23;
+    --tone-950: 10 10 10;
+    --tone-accent: 23 23 23;
+}
+
+/* Blue: cool blue-tinted grays, indigo-blue accent (#2563eb) */
+[data-theme="blue"] {
+    --tone-white: 250 252 255;
+    --tone-50: 244 247 252;
+    --tone-100: 235 240 248;
+    --tone-200: 217 226 238;
+    --tone-300: 198 210 227;
+    --tone-400: 148 163 187;
+    --tone-500: 100 116 144;
+    --tone-600: 71 85 110;
+    --tone-700: 53 65 88;
+    --tone-800: 32 41 59;
+    --tone-900: 19 26 41;
+    --tone-950: 9 13 23;
+    --tone-accent: 37 99 235;
+}
+
+/* Magenta: mauve-tinted grays, fuchsia accent (#c026d3) */
+[data-theme="magenta"] {
+    --tone-white: 254 250 254;
+    --tone-50: 250 244 250;
+    --tone-100: 246 236 246;
+    --tone-200: 235 219 234;
+    --tone-300: 222 199 220;
+    --tone-400: 180 150 176;
+    --tone-500: 136 105 132;
+    --tone-600: 100 73 96;
+    --tone-700: 77 55 74;
+    --tone-800: 49 33 47;
+    --tone-900: 32 20 30;
+    --tone-950: 16 8 15;
+    --tone-accent: 192 38 211;
+}
+
+/* Pink: warm rose-tinted grays, soft rose accent (#e0527f) */
+[data-theme="pink"] {
+    --tone-white: 255 250 251;
+    --tone-50: 252 245 247;
+    --tone-100: 249 238 241;
+    --tone-200: 241 221 227;
+    --tone-300: 231 200 209;
+    --tone-400: 193 152 164;
+    --tone-500: 148 106 119;
+    --tone-600: 110 74 86;
+    --tone-700: 85 56 66;
+    --tone-800: 54 34 41;
+    --tone-900: 35 21 26;
+    --tone-950: 18 9 12;
+    --tone-accent: 224 82 127;
+}
+
+/* Accent-tinted text selection under color themes */
+[data-theme] ::selection {
+    background-color: rgb(var(--tone-accent) / 0.22);
+}
+
 /* Bottom music player scrubber */
 .music-player-range {
     --music-progress: 0%;
-    --music-played: rgb(107 114 128);
-    --music-unplayed: rgb(212 212 212);
+    --music-played: rgb(var(--tone-500));
+    --music-unplayed: rgb(var(--tone-300));
     background: linear-gradient(
         to right,
         var(--music-played) 0%,
@@ -27,7 +102,7 @@
     width: 12px;
     height: 12px;
     border-radius: 9999px;
-    background: rgb(23 23 23);
+    background: rgb(var(--tone-900));
 }
 
 .dark .music-player-range::-webkit-slider-thumb {
@@ -39,7 +114,7 @@
     height: 12px;
     border: none;
     border-radius: 9999px;
-    background: rgb(23 23 23);
+    background: rgb(var(--tone-900));
 }
 
 .dark .music-player-range::-moz-range-thumb {

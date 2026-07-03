@@ -122,7 +122,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <meta name="theme-color" content="#000" />
                 <script dangerouslySetInnerHTML={{ __html: noFoucScript }} />
             </head>
-            <body className={cn(inter.className, "dark:bg-slate-900 dark:text-slate-400")}>
+            <body className={cn(inter.className, "bg-white dark:bg-slate-900 dark:text-slate-400")}>
                 <Alert
                     textPrefix={dictionary.ui.alertTextPrefix}
                     linkLabel={dictionary.ui.alertLinkLabel}
