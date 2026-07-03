@@ -11,6 +11,7 @@ function runInHead(script: string, opts: { storedMode?: string; systemDark?: boo
         added: [] as string[],
         removed: [] as string[],
         attrs: [] as Array<[string, string]>,
+        attrsRemoved: [] as string[],
         styleRemoved: false,
         reflowedTag: null as string | null,
     };
@@ -23,6 +24,7 @@ function runInHead(script: string, opts: { storedMode?: string; systemDark?: boo
             remove: (c: string) => calls.removed.push(c),
         },
         setAttribute: (k: string, v: string) => calls.attrs.push([k, v]),
+        removeAttribute: (k: string) => calls.attrsRemoved.push(k),
     };
     const doc = {
         body: null, // <head> executes before <body> exists
@@ -104,4 +106,46 @@ test("system mode resolves to dark when the OS prefers dark", () => {
 test("exposes window.updateDOM for the theme switcher", () => {
     const { win } = runInHead(buildNoFoucScript("k"));
     assert.equal(typeof win.updateDOM, "function");
+});
+
+test("applies data-theme and no dark class when stored mode is a color theme", () => {
+    const { calls } = runInHead(buildNoFoucScript("k"), { storedMode: "blue" });
+    assert.ok(!calls.added.includes("dark"));
+    assert.ok(calls.removed.includes("dark"));
+    assert.deepEqual(
+        calls.attrs.find(([k]) => k === "data-theme"),
+        ["data-theme", "blue"],
+    );
+    assert.deepEqual(
+        calls.attrs.find(([k]) => k === "data-mode"),
+        ["data-mode", "blue"],
+    );
+});
+
+test("color themes stay light even when the OS prefers dark", () => {
+    const { calls } = runInHead(buildNoFoucScript("k"), {
+        storedMode: "pink",
+        systemDark: true,
+    });
+    assert.ok(!calls.added.includes("dark"));
+    assert.deepEqual(
+        calls.attrs.find(([k]) => k === "data-theme"),
+        ["data-theme", "pink"],
+    );
+});
+
+test("magenta sets data-theme=magenta", () => {
+    const { calls } = runInHead(buildNoFoucScript("k"), { storedMode: "magenta" });
+    assert.deepEqual(
+        calls.attrs.find(([k]) => k === "data-theme"),
+        ["data-theme", "magenta"],
+    );
+});
+
+test("removes data-theme for dark/light/system modes", () => {
+    for (const storedMode of ["dark", "light", "system"]) {
+        const { calls } = runInHead(buildNoFoucScript("k"), { storedMode });
+        assert.equal(calls.attrs.some(([k]) => k === "data-theme"), false);
+        assert.ok(calls.attrsRemoved.includes("data-theme"));
+    }
 });

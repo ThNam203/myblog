@@ -8,6 +8,7 @@ export function buildNoFoucScript(storageKey: string): string {
   const SYSTEM = "system";
   const DARK = "dark";
   const LIGHT = "light";
+  const COLOR_THEMES = ["blue", "magenta", "pink"];
   const storageKey = "${storageKey}";
 
   const modifyTransition = () => {
@@ -29,10 +30,12 @@ export function buildNoFoucScript(storageKey: string): string {
     const mode = localStorage.getItem(storageKey) ?? SYSTEM;
     const systemMode = media.matches ? DARK : LIGHT;
     const resolvedMode = mode === SYSTEM ? systemMode : mode;
-    const classList = document.documentElement.classList;
-    if (resolvedMode === DARK) classList.add(DARK);
-    else classList.remove(DARK);
-    document.documentElement.setAttribute("data-mode", mode);
+    const root = document.documentElement;
+    if (resolvedMode === DARK) root.classList.add(DARK);
+    else root.classList.remove(DARK);
+    if (COLOR_THEMES.indexOf(mode) !== -1) root.setAttribute("data-theme", mode);
+    else root.removeAttribute("data-theme");
+    root.setAttribute("data-mode", mode);
     restoreTransitions();
   };
   window.updateDOM();
