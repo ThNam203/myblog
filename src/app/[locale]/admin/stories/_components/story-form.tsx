@@ -15,6 +15,7 @@ type DraftItem = {
     poster: string;
     captionVi: string;
     captionEn: string;
+    durationSec: string; // empty = use default; images only
     music: MusicValue | null;
     addressNameVi: string;
     addressNameEn: string;
@@ -39,6 +40,7 @@ function emptyItem(): DraftItem {
         poster: "",
         captionVi: "",
         captionEn: "",
+        durationSec: "",
         music: null,
         addressNameVi: "",
         addressNameEn: "",
@@ -68,6 +70,8 @@ function itemToDraft(item: StoryItem): DraftItem {
         poster: item.type === "video" ? (item.poster ?? "") : "",
         captionVi: item.caption?.vi ?? "",
         captionEn: item.caption?.en ?? "",
+        durationSec:
+            item.type === "image" && item.durationMs ? String(item.durationMs / 1000) : "",
         music:
             item.type === "image" && item.music
                 ? { src: item.music.src, startTime: item.music.startTime ?? 0 }
@@ -93,6 +97,11 @@ function draftToItem(draft: DraftItem): Record<string, unknown> {
     const post = localized(draft.postTitleVi, draft.postTitleEn);
     const postLinkVi = draft.postLinkVi.trim();
     const postLinkEn = draft.postLinkEn.trim();
+    const durationSec = Number(draft.durationSec);
+    const durationMs =
+        draft.durationSec.trim() && Number.isFinite(durationSec) && durationSec > 0
+            ? Math.round(durationSec * 1000)
+            : undefined;
 
     return {
         id: draft.id.trim(),
@@ -113,7 +122,7 @@ function draftToItem(draft: DraftItem): Record<string, unknown> {
             }
             : undefined,
         ...(draft.type === "image"
-            ? { music: draft.music ?? undefined }
+            ? { music: draft.music ?? undefined, durationMs }
             : { poster: draft.poster || undefined }),
     };
 }
@@ -353,6 +362,7 @@ export function StoryForm({ initialGroup, onDone }: Props) {
                                         src: "",
                                         poster: "",
                                         music: null,
+                                        durationSec: "",
                                     })
                                 }
                             >
@@ -428,10 +438,29 @@ export function StoryForm({ initialGroup, onDone }: Props) {
                         </div>
 
                         {item.type === "image" && (
-                            <MusicPicker
-                                value={item.music}
-                                onChange={(music) => updateItem(item.key, { music })}
-                            />
+                            <>
+                                <label className="flex items-center gap-2 text-sm">
+                                    Display duration
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        step="any"
+                                        placeholder="20"
+                                        className={`${inputClass} w-20`}
+                                        value={item.durationSec}
+                                        onChange={(e) =>
+                                            updateItem(item.key, { durationSec: e.target.value })
+                                        }
+                                    />
+                                    <span className="text-neutral-500">
+                                        seconds (default 20)
+                                    </span>
+                                </label>
+                                <MusicPicker
+                                    value={item.music}
+                                    onChange={(music) => updateItem(item.key, { music })}
+                                />
+                            </>
                         )}
 
                         <details>
