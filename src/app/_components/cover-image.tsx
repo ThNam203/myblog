@@ -16,12 +16,11 @@ const CoverImage = ({ title, src, slug, locale, preload = false }: Props) => {
         <Image
             src={src}
             alt={`Cover Image for ${title}`}
-            className={cn("shadow-sm w-full max-h-[400px] aspect-video", {
+            className={cn("shadow-sm w-full max-h-[400px] max-w-[800px] mx-auto", {
                 "hover:shadow-lg transition-shadow duration-200": slug,
             })}
-            width={1300}
-            height={630}
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 80vw, 1300px"
+            width={800}
+            height={400}
             preload={preload}
             loading={preload ? "eager" : "lazy"}
             quality={75}
