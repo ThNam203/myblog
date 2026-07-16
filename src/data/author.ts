@@ -29,32 +29,25 @@ const AUTHOR_PORTFOLIO_URL = "https://sen1or-portfolio.vercel.app";
 
 const AUTHOR_HOBBIES: Record<Locale, string[]> = {
     vi: [
-        "Game FPS & hack-n-slash",
         "Cà phê, đi chơi và karaoke với bạn bè",
-        "Gym và đi xe đạp/đi bộ",
+        "Gym, cầu lông, đi xe đạp hoặc đi bộ",
         "Đọc sách, chủ yếu là văn học kinh điển và nghe nhạc",
+        "Game FPS & hack-n-slash",
     ],
     en: [
-        "FPS & hack-n-slash games",
         "Coffee, play and karaoke with friends",
-        "Gym and bike/walk",
+        "Gym, badminton, bike or walk",
         "Read books, mainly classic literature and listen to music",
+        "FPS & hack-n-slash games",
     ],
 };
 
 const AUTHOR_MORE_INFORMATION: Record<Locale, string[]> = {
     vi: [
-        "IT đần, lương dưới 1K đô",
-        "Cận đụt lùn trĩ",
-        "Vozer mới nổi",
-        "Threads City nằm vùng",
-        "Reddit basement dweller",
-        "23 năm không một lần nắm tay bạn gái nào",
-        "Không tiền không tình",
-        "Gần Đà Lạt nhưng chưa bao giờ lên",
-        "Năm 22 lần đầu thấy biển",
-        "Được cái yêu đời, yêu gia đình, yêu bạn bè, yêu bản thân",
-        "Đã đọc Giết con chim nhại (Harper Lee), Không gia đình (Hector Malot), Don Quixote (Miguel de Cervantes), Hai vạn dặm dưới đáy biển (Jules Verne), Ông già và biển cả (Ernest Hemingway), và Đi tìm lẽ sống (Viktor Frankl)",
+        "IT đần, cao 1m77, quê Đồng Nai ( ๑‾̀◡‾́)σ",
+        "Vozer mới nổi, Threads city nằm vùng, Reddit basement dweller",
+        "Đã đọc Giết con chim nhại (Harper Lee), Không gia đình (Hector Malot), Don Quixote (Miguel de Cervantes), Hai vạn dặm dưới đáy biển (Jules Verne), Ông già và biển cả (Ernest Hemingway), Đi tìm lẽ sống (Viktor Frankl), Who moved my cheese? (Spencer Johnson)",
+        "Gần Đà Lạt nhưng chưa vẫn chưa bao giờ lên",
         "TOEIC 940 (Reading & Listening)",
         "Giải 3 Tin học cấp huyện lớp 8",
         "Giải 3 Vật lý cấp huyện lớp 9",
@@ -63,17 +56,10 @@ const AUTHOR_MORE_INFORMATION: Record<Locale, string[]> = {
         "26.95 điểm khối A01 THPT Quốc Gia 2021",
     ],
     en: [
-        "Clueless IT guy, salary under $1K",
-        "Four-eyed, nerdy, short, with hemorrhoids",
-        "Up-and-coming Vozer",
-        "Threads City lurker",
-        "Reddit basement dweller",
-        "23 years without ever holding a girl's hand",
-        "No money, no romance",
-        "Lives near Da Lat but never actually been there",
-        "Saw the ocean for the first time at 22",
-        "But hey, I love life, family, friends, and myself",
-        "Have read To Kill a Mockingbird (Harper Lee), Sans Famille (Hector Malot), Don Quixote (Miguel de Cervantes), Twenty Thousand Leagues Under the Seas (Jules Verne), The Old Man and the Sea (Ernest Hemingway), and Man's Search for Meaning (Viktor Frankl).",
+        "IT guy, height 1m77, from Dong Nai ( ๑‾̀◡‾́)σ",
+        "Up-and-coming Vozer, Threads city lurker, Reddit basement dweller",
+        "Lives near Da Lat but still hasn't been there",
+        "Have read To Kill a Mockingbird (Harper Lee), Sans Famille (Hector Malot), Don Quixote (Miguel de Cervantes), Twenty Thousand Leagues Under the Seas (Jules Verne), The Old Man and the Sea (Ernest Hemingway), Man's Search for Meaning (Viktor Frankl), Who moved my cheese? (Spencer Johnson).",
         "TOEIC 940 (Reading & Listening)",
         "3rd place in Computer Science competition at the district level in class 8",
         "3rd place in Physics competition at the district level in class 9",
@@ -87,12 +73,14 @@ const AUTHOR_EDUCATION: Record<Locale, AuthorEducation[]> = {
     vi: [
         {
             school: "Trường Đại học Công nghệ Thông tin — ĐHQG TP.HCM (UIT)",
+            detail: "Ngành kĩ thuật phần mềm",
             period: "2021 - 2025",
         },
     ],
     en: [
         {
             school: "University of Information Technology — VNU-HCM (UIT)",
+            detail: "Major in software engineering",
             period: "2021 - 2025",
         },
     ],
