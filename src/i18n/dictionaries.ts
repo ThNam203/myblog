@@ -107,8 +107,6 @@ export type Dictionary = {
         aboutPageMetaTitle: string;
         aboutPageDescription: string;
         aboutHobbiesHeading: string;
-        aboutMoreInformationHeading: string;
-        aboutMoreInformationDescription: string;
         aboutEducationHeading: string;
         aboutLinksHeading: string;
         aboutPortfolioCta: string;
@@ -346,8 +344,6 @@ const dictionaries: Record<Locale, Dictionary> = {
             aboutPageDescription:
                 "Về Huỳnh Thành Nam — kỹ sư phần mềm fullstack tại Thành phố Hồ Chí Minh.",
             aboutHobbiesHeading: "Sở thích",
-            aboutMoreInformationHeading: "Thông tin thêm",
-            aboutMoreInformationDescription: "Vớ vẩn.",
             aboutEducationHeading: "Học vấn",
             aboutLinksHeading: "Liên kết",
             aboutPortfolioCta: "Xem portfolio đầy đủ",
@@ -513,8 +509,6 @@ const dictionaries: Record<Locale, Dictionary> = {
             aboutPageDescription:
                 "About Huỳnh Thành Nam — a fullstack software engineer based in Ho Chi Minh City.",
             aboutHobbiesHeading: "Hobbies",
-            aboutMoreInformationHeading: "More information",
-            aboutMoreInformationDescription: "Silly things.",
             aboutEducationHeading: "Education",
             aboutLinksHeading: "Links",
             aboutPortfolioCta: "View full portfolio",

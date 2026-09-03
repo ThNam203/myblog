@@ -18,7 +18,6 @@ export type AuthorInfo = {
     location: string;
     picture: string;
     hobbies: string[];
-    moreInformation: string[];
     education: AuthorEducation[];
     socials: AuthorSocialLink[];
     portfolioUrl: string;
@@ -31,41 +30,16 @@ const AUTHOR_HOBBIES: Record<Locale, string[]> = {
     vi: [
         "Cà phê, đi chơi và karaoke với bạn bè",
         "Gym, cầu lông, đi xe đạp hoặc đi bộ",
-        "Đọc sách, chủ yếu là văn học kinh điển và nghe nhạc",
+        "Đọc sách, chủ yếu là văn học kinh điển",
+        "Nghe nhạc, chủ yếu V-pop và US-UK",
         "Game FPS & hack-n-slash",
     ],
     en: [
         "Coffee, play and karaoke with friends",
         "Gym, badminton, bike or walk",
-        "Read books, mainly classic literature and listen to music",
+        "Read books, mainly classic literature",
+        "Listening to music, mostly V-pop and US-UK",
         "FPS & hack-n-slash games",
-    ],
-};
-
-const AUTHOR_MORE_INFORMATION: Record<Locale, string[]> = {
-    vi: [
-        "IT đần, cao 1m77, quê Đồng Nai ( ๑‾̀◡‾́)σ",
-        "Vozer mới nổi, Threads city nằm vùng, Reddit basement dweller",
-        "Đã đọc Giết con chim nhại (Harper Lee), Không gia đình (Hector Malot), Don Quixote (Miguel de Cervantes), Hai vạn dặm dưới đáy biển (Jules Verne), Ông già và biển cả (Ernest Hemingway), Đi tìm lẽ sống (Viktor Frankl), Who moved my cheese? (Spencer Johnson)",
-        "Gần Đà Lạt nhưng chưa vẫn chưa bao giờ lên",
-        "TOEIC 940 (Reading & Listening)",
-        "Giải 3 Tin học cấp huyện lớp 8",
-        "Giải 3 Vật lý cấp huyện lớp 9",
-        "Giải 3 Vật lý cấp tỉnh lớp 11",
-        "Giải 2 Vật lý cấp tỉnh lớp 12",
-        "26.95 điểm khối A01 THPT Quốc Gia 2021",
-    ],
-    en: [
-        "IT guy, height 1m77, from Dong Nai ( ๑‾̀◡‾́)σ",
-        "Up-and-coming Vozer, Threads city lurker, Reddit basement dweller",
-        "Lives near Da Lat but still hasn't been there",
-        "Have read To Kill a Mockingbird (Harper Lee), Sans Famille (Hector Malot), Don Quixote (Miguel de Cervantes), Twenty Thousand Leagues Under the Seas (Jules Verne), The Old Man and the Sea (Ernest Hemingway), Man's Search for Meaning (Viktor Frankl), Who moved my cheese? (Spencer Johnson).",
-        "TOEIC 940 (Reading & Listening)",
-        "3rd place in Computer Science competition at the district level in class 8",
-        "3rd place in Physics competition at the district level in class 9",
-        "3rd place in Physics competition at the province level in class 11",
-        "2nd place in Physics competition at the province level in class 12",
-        "26.95 points in the National High School Entrance Examination 2021",
     ],
 };
 
@@ -102,7 +76,6 @@ const author: Record<Locale, AuthorInfo> = {
         location: "Thành phố Hồ Chí Minh, Việt Nam",
         picture: AUTHOR_PICTURE,
         hobbies: AUTHOR_HOBBIES.vi,
-        moreInformation: AUTHOR_MORE_INFORMATION.vi,
         education: AUTHOR_EDUCATION.vi,
         socials: AUTHOR_SOCIALS,
         portfolioUrl: AUTHOR_PORTFOLIO_URL,
@@ -114,7 +87,6 @@ const author: Record<Locale, AuthorInfo> = {
         location: "Ho Chi Minh City, Vietnam",
         picture: AUTHOR_PICTURE,
         hobbies: AUTHOR_HOBBIES.en,
-        moreInformation: AUTHOR_MORE_INFORMATION.en,
         education: AUTHOR_EDUCATION.en,
         socials: AUTHOR_SOCIALS,
         portfolioUrl: AUTHOR_PORTFOLIO_URL,
