@@ -23,7 +23,7 @@ export type AuthorInfo = {
     portfolioUrl: string;
 };
 
-const AUTHOR_PICTURE = "/assets/avatar/my_first_avatar.webp";
+const AUTHOR_PICTURE = "/assets/avatar/my_second_avatar.webp";
 const AUTHOR_PORTFOLIO_URL = "https://sen1or-portfolio.vercel.app";
 
 const AUTHOR_HOBBIES: Record<Locale, string[]> = {

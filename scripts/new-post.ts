@@ -77,7 +77,7 @@ categories:
 ${categoryYaml}
 author:
     name: Huỳnh Thành Nam
-    picture: "/assets/avatar/my_first_avatar.webp"
+    picture: "/assets/avatar/my_second_avatar.webp"
 ${opts.draft ? "draft: true\n" : ""}---
 
 Write your post here.
